@@ -1,0 +1,52 @@
+#SYMBOL_NAME "Google Nest System Processor"
+
+#INCLUDEPATH "C:\\Users\\mathew.klucznyk\\OneDrive - Global USS\\Crestron Modules\\Mat\\SIMPLSharp Projects\\GoogleNest\\GoogleNest\\GoogleNest\\bin\\Debug"
+#USER_SIMPLSHARP_LIBRARY "GoogleNest"
+
+digital_input Initialize;
+string_input AuthCode[65534];
+
+digital_output IsInitialized;
+string_output Error;
+
+string_parameter _skip_, _skip_, _skip_, ClientID[65534], ClientSecret[65534], ProjectID[65534];
+
+GoogleNestCloud cloud;
+
+push Initialize
+{
+    if(!IsInitialized)
+    {
+        if(len(ProjectID) && len(ClientID) && len(ClientSecret))
+        {
+            cloud.AuthCode = AuthCode;
+            cloud.ClientID = ClientID;
+            cloud.ClientSecret = ClientSecret;  
+            cloud.ProjectID = ProjectID;
+
+            cloud.Initialize();
+        }
+        else
+        {
+        	Error = "Project ID, Client ID and Client Secret must be filled out in the SIMPL program";
+        }
+    }
+}
+
+callback function NewErrorMessage(string msg)
+{
+    Error = msg;
+}
+
+callback function NewIsInitialized(integer state)
+{
+    IsInitialized = state;
+}
+
+function Main()
+{
+    WaitForInitializationComplete();
+
+    RegisterDelegate(cloud, onErrorMessage, NewErrorMessage);
+    RegisterDelegate(cloud, onIsInitialized, NewIsInitialized);
+}

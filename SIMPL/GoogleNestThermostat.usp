@@ -1,0 +1,35 @@
+#SYMBOL_NAME "Google Nest Thermostat"
+
+#INCLUDEPATH "C:\\Users\\mathew.klucznyk\\OneDrive - Global USS\\Crestron Modules\\Mat\\SIMPLSharp Projects\\GoogleNest\\GoogleNest\\GoogleNest\\bin\\Debug"
+#USER_SIMPLSHARP_LIBRARY "GoogleNest"
+
+digital_input GetDevice;
+
+digital_output IsOnline, FanIsOn, IsEcoMode, IsCelsius, IsFahreniheit;
+analog_output HumidityPercentage, CurrentMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentSetPoint, CurrentTemperature;
+string_output RoomName;
+
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+
+GoogleNestThermostat thermostat;
+
+callback function newOnline(integer args)
+{
+    IsOnline = args;
+}
+
+callback function newCurrentTemperature(integer args)
+{
+    CurrentTemperature = args;
+}
+
+function Main()
+{
+    thermostat.Initialize(DeviceName);
+
+    RegisterDelegate(thermostat, onOnline, newOnline);
+    RegisterDelegate(thermostat, onCurrentTemperature, newCurrentTemperature);
+    
+    
+    
+}
