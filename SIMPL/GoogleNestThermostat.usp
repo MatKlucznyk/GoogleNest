@@ -7,29 +7,90 @@ digital_input GetDevice;
 
 digital_output IsOnline, FanIsOn, IsEcoMode, IsCelsius, IsFahreniheit;
 analog_output HumidityPercentage, CurrentMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentSetPoint, CurrentTemperature;
-string_output RoomName;
+string_output CurrentTemperatureString, RoomName;
 
-string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
+
+push GetDevice
+{
+    thermostat.GetDevice();
+}
 
 callback function newOnline(integer args)
 {
     IsOnline = args;
 }
 
-callback function newCurrentTemperature(integer args)
+callback function newFanState(integer args)
 {
-    CurrentTemperature = args;
+    FanIsOn = args;
+}
+
+callback function newCurrentTemperature(integer value, string sValue)
+{
+    CurrentTemperature = value;
+    CurrentTemperatureString = sValue;
+}
+
+callback function newEcoModeState(integer args)
+{
+}
+
+callback function newTemperatureMode(string args)
+{
+    if(args = "HEAT")
+    {
+        CurrentMode = 1;
+    }
+    else if(args = "COOL")
+    {
+        CurrentMode = 2;
+    }
+    else if(args = "HEATCOOL")
+    {
+        CurrentMode = 3;
+    }
+    else if(args = "OFF")
+    {
+        CurrentMode = 0;
+    }
+}
+
+callback function newHumidity(integer args)
+{ 
+	HumidityPercentage = args;
+}
+
+callback function newCurrentMode(string args)
+{
+}
+
+callback function newEcoHeatSetPoint(integer args)
+{
+}
+
+callback function newEcoCoolSetPoint(integer args)
+{
+} 
+
+callback function newonCurrentSetPoint(integer args)
+{
 }
 
 function Main()
 {
-    thermostat.Initialize(DeviceName);
-
     RegisterDelegate(thermostat, onOnline, newOnline);
+    RegisterDelegate(thermostat, onFanState,  newFanState);
     RegisterDelegate(thermostat, onCurrentTemperature, newCurrentTemperature);
+    RegisterDelegate(thermostat, onEcoModeState, newEcoModeState);
+    RegisterDelegate(thermostat, onTemperatureMode, newTemperatureMode);
+    RegisterDelegate(thermostat, onHumidity, newHumidity);
+    RegisterDelegate(thermostat, onCurrentMode, newCurrentMode);
+    RegisterDelegate(thermostat, onEcoHeatSetPoint, newEcoHeatSetPoint);
+    RegisterDelegate(thermostat, onEcoCoolSetPoint, newEcoCoolSetPoint);
+    RegisterDelegate(thermostat, onCurrentSetPoint, newonCurrentSetPoint);
     
-    
-    
+    thermostat.Initialize(DeviceName);
 }

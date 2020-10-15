@@ -47,8 +47,10 @@
   OutputList2SigType5=Analog
   OutputList2Cue6=CurrentTemperature
   OutputList2SigType6=Analog
-  OutputList2Cue7=RoomName
+  OutputList2Cue7=CurrentTemperatureString
   OutputList2SigType7=Serial
+  OutputList2Cue8=RoomName
+  OutputList2SigType8=Serial
   ParamCue1=[Reference Name]
   ParamCue2=[~UNUSED~]
   ParamSigType2=Constant
@@ -74,18 +76,20 @@
   ParamSigType12=Constant
   ParamCue13=[~UNUSED~]
   ParamSigType13=Constant
-  ParamCue14=DeviceName
-  ParamSigType14=String
+  ParamCue14=[~UNUSED~]
+  ParamSigType14=Constant
+  ParamCue15=DeviceName
+  ParamSigType15=String
   MinVariableInputs=1
   MaxVariableInputs=1
   MinVariableInputsList2=0
   MaxVariableInputsList2=0
   MinVariableOutputs=5
   MaxVariableOutputs=5
-  MinVariableOutputsList2=7
-  MaxVariableOutputsList2=7
-  MinVariableParams=13
-  MaxVariableParams=13
+  MinVariableOutputsList2=8
+  MaxVariableOutputsList2=8
+  MinVariableParams=14
+  MaxVariableParams=14
   Expand=expand_separately
   Expand2=expand_separately
   ProgramTree=Logic
@@ -100,8 +104,8 @@
   CompilerParamCode5=14
   NumFixedParams=1
   Pp1=1
-  Pp14=14
-  MPp=14
+  Pp15=15
+  MPp=15
   NVStorage=10
   ParamSigType1=String
   SmplCInputCue1=o#
@@ -122,7 +126,7 @@
 [END]
 [BEGIN]
   ObjTp=Dp
-  H=14
+  H=15
   Tp=1
   HD=False
   NoS=False

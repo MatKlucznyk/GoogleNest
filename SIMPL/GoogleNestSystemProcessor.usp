@@ -19,10 +19,10 @@ push Initialize
     {
         if(len(ProjectID) && len(ClientID) && len(ClientSecret))
         {
-            cloud.AuthCode = AuthCode;
-            cloud.ClientID = ClientID;
-            cloud.ClientSecret = ClientSecret;  
-            cloud.ProjectID = ProjectID;
+            GoogleNestCloud.AuthCode = AuthCode;
+            GoogleNestCloud.ClientID = ClientID;
+            GoogleNestCloud.ClientSecret = ClientSecret;  
+            GoogleNestCloud.ProjectID = ProjectID;
 
             cloud.Initialize();
         }

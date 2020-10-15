@@ -19,7 +19,7 @@ namespace GoogleNest
         public delegate void EcoHeatSetPoint(ushort value);
         public delegate void EcoCoolSetPoint(ushort value);
         public delegate void CurrentSetPoint(ushort value);
-        public delegate void CurrentTemperature(ushort value);
+        public delegate void CurrentTemperature(ushort value, SimplSharpString sValue);
         public Online onOnline { get; set; }
         public FanState onFanState { get; set; }
         public EcoModeState onEcoModeState { get; set; }
@@ -58,7 +58,35 @@ namespace GoogleNest
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
-                        onCurrentTemperature((ushort)(temp * 10));
+                        onCurrentTemperature((ushort)(temp * 10), deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Humidity"] != null)
+                {
+                    if (onHumidity != null)
+                    {
+                        onHumidity(Convert.ToUInt16(deviceData["traits"]["sdm.devices.traits.Humidity"]["ambientHumidityPercent"].ToString().Replace("\"", string.Empty)));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Fan"] != null)
+                {
+                    if (onFanState != null)
+                    {
+                        if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerMode"].ToString().Replace("\"", string.Empty) == "ON")
+                        {
+                            onFanState(1);
+                        }
+                        else
+                        {
+                            onFanState(0);
+                        }
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.ThermostatMode"] != null)
+                {
+                    if (onCurrentMode != null)
+                    {
+                        onCurrentMode(deviceData["traits"]["sdm.devices.traits.ThermostatMode"]["mode"].ToString().Replace("\"", string.Empty));
                     }
                 }
             }

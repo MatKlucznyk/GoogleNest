@@ -11,24 +11,26 @@ namespace GoogleNest
 {
     public class GoogleNestCloud
     {
-        public string AuthCode { get; set; }
-        public string ClientID { get; set; }
-        public string ClientSecret { get; set; }
-        public string ProjectID { get; set; }
+        public static string AuthCode { get; set; }
+        public static string ClientID { get; set; }
+        public static string ClientSecret { get; set; }
+        public static string ProjectID { get; set; }
 
         public delegate void ErrorMsg(SimplSharpString errorMessage);
         public delegate void IsInitialized(ushort state);
         public ErrorMsg onErrorMessage { get; set; }
         public IsInitialized onIsInitialized { get; set; }
 
-        private bool isInitialized;
+        
         private string refreshTokenFilePath = string.Format(@"\user\{0}\", Directory.GetApplicationDirectory().Split('\\')[2]);
         private string refreshTokenFileName = "google_nest_config";
         private string refreshToken;
-        private string tokenType;
+        
         private CTimer refreshTimer;
 
-        internal string Token;
+        internal static bool Initialized;
+        internal static string Token;
+        internal static string TokenType;
         internal static Dictionary<string, GoogleNestDevice> devices = new Dictionary<string, GoogleNestDevice>();
 
         public void Initialize()
@@ -71,7 +73,7 @@ namespace GoogleNest
 
                 if (Token.Length > 0)
                 {
-                    isInitialized = true;
+                    Initialized = true;
 
                     if (onIsInitialized != null)
                     {
@@ -82,7 +84,7 @@ namespace GoogleNest
                 }
                 else
                 {
-                    isInitialized = false;
+                    Initialized = false;
 
                     if (onIsInitialized != null)
                     {
@@ -92,7 +94,7 @@ namespace GoogleNest
             }
             catch (Exception e)
             {
-                isInitialized = false;
+                Initialized = false;
 
                 if (onIsInitialized != null)
                 {
@@ -139,7 +141,7 @@ namespace GoogleNest
                             }
                             if (body["token_type"] != null)
                             {
-                                tokenType = body["token_type"].ToString().Replace("\"", string.Empty);
+                                TokenType = body["token_type"].ToString().Replace("\"", string.Empty);
                             }
                         }
                     }
@@ -189,7 +191,7 @@ namespace GoogleNest
                             }
                             if (body["token_type"] != null)
                             {
-                                tokenType = body["token_type"].ToString().Replace("\"", string.Empty);
+                                TokenType = body["token_type"].ToString().Replace("\"", string.Empty);
                             }
                             if (body["refresh_token"] != null)
                             {
@@ -227,7 +229,7 @@ namespace GoogleNest
                     request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/enterprises/" + ProjectID + "/devices");
                     request.RequestType = RequestType.Get;
                     request.Header.ContentType = "application/json";
-                    request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", tokenType, Token)));
+                    request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", TokenType, Token)));
                     
                     HttpsClientResponse response = client.Dispatch(request);
 
