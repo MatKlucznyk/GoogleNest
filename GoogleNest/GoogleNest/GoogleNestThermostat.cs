@@ -12,7 +12,7 @@ namespace GoogleNest
     {
         public delegate void Online(ushort state);
         public delegate void FanState(ushort state);
-        public delegate void EcoModeState(ushort state);
+        public delegate void EcoModeState(SimplSharpString mode);
         public delegate void TemperatureMode(SimplSharpString mode);
         public delegate void Humidity(ushort value);
         public delegate void CurrentMode(SimplSharpString mode);
@@ -87,6 +87,51 @@ namespace GoogleNest
                     if (onCurrentMode != null)
                     {
                         onCurrentMode(deviceData["traits"]["sdm.devices.traits.ThermostatMode"]["mode"].ToString().Replace("\"", string.Empty));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.ThermostatEco"] != null)
+                {
+                    if (onEcoModeState != null)
+                    {
+                        onEcoModeState(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["mode"].ToString().Replace("\"", string.Empty));
+                    }
+                    if (onEcoHeatSetPoint != null)
+                    {
+                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                        onEcoHeatSetPoint((ushort)(temp * 10));
+                    }
+                    if (onEcoCoolSetPoint != null)
+                    {
+                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                        onEcoCoolSetPoint((ushort)(temp * 10));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Settings"] != null)
+                {
+                    if (onTemperatureMode != null)
+                    {
+                        onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"] != null)
+                {
+                    if (onCurrentSetPoint != null)
+                    {
+                        //add farheniheit
+                        if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"] != null)
+                        {
+                            double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                            onCurrentSetPoint((ushort)(temp * 10));
+                        }
+                        else if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
+                        {
+                            double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                            onCurrentSetPoint((ushort)(temp * 10));
+                        }
                     }
                 }
             }

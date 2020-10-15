@@ -11,6 +11,9 @@ namespace GoogleNest
 {
     public class GoogleNestDevice
     {
+        public delegate void RoomName(SimplSharpString name);
+        public RoomName onRoomName { get; set; }
+
         public string DeviceName { get { return DeviceName; } }
 
         private string deviceName;
@@ -28,12 +31,23 @@ namespace GoogleNest
 
             if (GoogleNestCloud.Initialized)
             {
+                GetDevice();
             }
         }
             
         internal virtual void ParseData(JToken deviceData)
         {
-            DeviceID = deviceData["name"].ToString().Replace("\"", string.Empty);
+            if (deviceData["name"] != null)
+            {
+                DeviceID = deviceData["name"].ToString().Replace("\"", string.Empty);
+            }
+            if (deviceData["parentRelations"] != null)
+            {
+                if (onRoomName != null)
+                {
+                    onRoomName(deviceData["parentRelations"][0]["displayName"].ToString().Replace("\"", string.Empty));
+                }
+            }
         }
 
         public void GetDevice()

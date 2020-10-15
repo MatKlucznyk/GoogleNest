@@ -6,10 +6,10 @@
 digital_input GetDevice;
 
 digital_output IsOnline, FanIsOn, IsEcoMode, IsCelsius, IsFahreniheit;
-analog_output HumidityPercentage, CurrentMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentSetPoint, CurrentTemperature;
+analog_output HumidityPercentage, CurrentMode, CurrentEcoMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentSetPoint, CurrentTemperature;
 string_output CurrentTemperatureString, RoomName;
 
-string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
 
@@ -34,11 +34,38 @@ callback function newCurrentTemperature(integer value, string sValue)
     CurrentTemperatureString = sValue;
 }
 
-callback function newEcoModeState(integer args)
+callback function newEcoModeState(string args)
 {
+    if(args = "OFF")
+    {
+        CurrentEcoMode = 0;
+    }
+    if(args = "MANUAL_ECO")
+    {
+        CurrentEcoMode = 1;
+    }
 }
 
 callback function newTemperatureMode(string args)
+{
+    if(args = "CELSIUS")
+    {
+        IsCelsius = ON;
+        IsFahreniheit = OFF;
+    }
+    else if(args = "FAHRENIHEIT")
+    {
+        IsCelsius = OFF;
+        IsFahreniheit = ON;
+    }
+}
+
+callback function newHumidity(integer args)
+{ 
+	HumidityPercentage = args;
+}
+
+callback function newCurrentMode(string args)
 {
     if(args = "HEAT")
     {
@@ -58,25 +85,24 @@ callback function newTemperatureMode(string args)
     }
 }
 
-callback function newHumidity(integer args)
-{ 
-	HumidityPercentage = args;
-}
-
-callback function newCurrentMode(string args)
-{
-}
-
 callback function newEcoHeatSetPoint(integer args)
 {
+    CurrentEcoHeatSetPoint = args;
 }
 
 callback function newEcoCoolSetPoint(integer args)
 {
+    CurrentEcoCoolSetPoint = args;
 } 
 
-callback function newonCurrentSetPoint(integer args)
+callback function newCurrentSetPoint(integer args)
 {
+    CurrentSetPoint = args;
+}
+
+callback function newRoomName(string name)
+{
+    RoomName = name;
 }
 
 function Main()
@@ -90,7 +116,8 @@ function Main()
     RegisterDelegate(thermostat, onCurrentMode, newCurrentMode);
     RegisterDelegate(thermostat, onEcoHeatSetPoint, newEcoHeatSetPoint);
     RegisterDelegate(thermostat, onEcoCoolSetPoint, newEcoCoolSetPoint);
-    RegisterDelegate(thermostat, onCurrentSetPoint, newonCurrentSetPoint);
+    RegisterDelegate(thermostat, onCurrentSetPoint, newCurrentSetPoint);
+    RegisterDelegate(thermostat, onRoomName, newRoomName);
     
     thermostat.Initialize(DeviceName);
 }
