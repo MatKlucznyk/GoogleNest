@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Crestron.SimplSharp;
+using Crestron.SimplSharp.Net.Https;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,7 +19,8 @@ namespace GoogleNest
         public delegate void CurrentMode(SimplSharpString mode);
         public delegate void EcoHeatSetPoint(ushort value);
         public delegate void EcoCoolSetPoint(ushort value);
-        public delegate void CurrentSetPoint(ushort value);
+        public delegate void CurrentHeatSetPoint(ushort value);
+        public delegate void CurrentCoolSetPoint(ushort value);
         public delegate void CurrentTemperature(ushort value, SimplSharpString sValue);
         public Online onOnline { get; set; }
         public FanState onFanState { get; set; }
@@ -28,7 +30,8 @@ namespace GoogleNest
         public CurrentMode onCurrentMode { get; set; }
         public EcoHeatSetPoint onEcoHeatSetPoint { get; set; }
         public EcoCoolSetPoint onEcoCoolSetPoint { get; set; }
-        public CurrentSetPoint onCurrentSetPoint { get; set; }
+        public CurrentHeatSetPoint onCurrentHeatSetPoint { get; set; }
+        public CurrentCoolSetPoint onCurrentCoolSetPoint { get; set; }
         public CurrentTemperature onCurrentTemperature { get; set; }
 
         internal override void ParseData(JToken deviceData)
@@ -117,23 +120,80 @@ namespace GoogleNest
                 }
                 if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"] != null)
                 {
-                    if (onCurrentSetPoint != null)
+                    //add farheniheit
+                    if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"] != null)
                     {
-                        //add farheniheit
-                        if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"] != null)
-                        {
-                            double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
-                            onCurrentSetPoint((ushort)(temp * 10));
-                        }
-                        else if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
-                        {
-                            double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        if (onCurrentCoolSetPoint != null)
+                            onCurrentHeatSetPoint((ushort)(temp * 10));
+                    }
+                    else if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
+                    {
+                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
-                            onCurrentSetPoint((ushort)(temp * 10));
+                        if (onCurrentHeatSetPoint != null)
+                            onCurrentHeatSetPoint((ushort)(temp * 10));
+                    }
+                }
+            }
+        }
+
+        public void SetCool(ushort setPoint)
+        {
+            try
+            {
+                if (setPoint >= 90 && setPoint <= 320)
+                {
+
+                    var sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
+
+                    var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetCool\",\"params\":{\"coolCelsius\":" + sPoint + "}}");
+
+                    if (response != null)
+                    {
+                        if (response.Length > 0)
+                        {
+                            if (response == "{}\n")
+                            {
+                                if (onCurrentCoolSetPoint != null)
+                                    onCurrentCoolSetPoint(setPoint);
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        public void SetHeat(ushort setPoint)
+        {
+            try
+            {
+                if (setPoint >= 90 && setPoint <= 320)
+                {
+
+                    var sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
+
+                    var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + sPoint + "}}");
+
+                    if (response != null)
+                    {
+                        if (response.Length > 0)
+                        {
+                            if (response == "{}\n")
+                            {
+                                if (onCurrentHeatSetPoint != null)
+                                    onCurrentHeatSetPoint(setPoint);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
             }
         }
     }

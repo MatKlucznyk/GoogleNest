@@ -4,18 +4,47 @@
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
 digital_input GetDevice;
+analog_input SetCoolSetpoint, SetHeatSetpoint;
 
 digital_output IsOnline, FanIsOn, IsEcoMode, IsCelsius, IsFahreniheit;
-analog_output HumidityPercentage, CurrentMode, CurrentEcoMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentSetPoint, CurrentTemperature;
+analog_output HumidityPercentage, CurrentMode, CurrentEcoMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentHeatSetPoint, CurrentCoolSetPoint, CurrentTemperature;
 string_output CurrentTemperatureString, RoomName;
 
-string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
 
 push GetDevice
 {
     thermostat.GetDevice();
+}
+
+threadsafe change SetCoolSetpoint
+{
+    integer x;
+
+    Seed(CurrentCoolSetPoint);
+    x = Random(1, 65534);
+
+    while(x != SetCoolSetpoint)
+    {
+        x = SetCoolSetpoint;
+        thermostat.SetCool(x);
+    }
+}
+
+threadsafe change SetHeatSetpoint
+{
+    integer x;
+
+    Seed(CurrentHeatSetPoint);
+    x = Random(1, 65534);
+
+    while(x != SetHeatSetpoint)
+    {
+        x = SetHeatSetpoint;
+        thermostat.SetHeat(x);
+    }
 }
 
 callback function newOnline(integer args)
@@ -95,9 +124,14 @@ callback function newEcoCoolSetPoint(integer args)
     CurrentEcoCoolSetPoint = args;
 } 
 
-callback function newCurrentSetPoint(integer args)
+callback function newCurrentHeatSetPoint(integer args)
 {
-    CurrentSetPoint = args;
+    CurrentHeatSetPoint = args;
+}
+
+callback function newCurrentCoolSetPoint(integer args)
+{
+    CurrentCoolSetPoint = args;
 }
 
 callback function newRoomName(string name)
@@ -116,7 +150,8 @@ function Main()
     RegisterDelegate(thermostat, onCurrentMode, newCurrentMode);
     RegisterDelegate(thermostat, onEcoHeatSetPoint, newEcoHeatSetPoint);
     RegisterDelegate(thermostat, onEcoCoolSetPoint, newEcoCoolSetPoint);
-    RegisterDelegate(thermostat, onCurrentSetPoint, newCurrentSetPoint);
+    RegisterDelegate(thermostat, onCurrentHeatSetPoint, newCurrentHeatSetPoint);
+    RegisterDelegate(thermostat, onCurrentCoolSetPoint, newCurrentCoolSetPoint);
     RegisterDelegate(thermostat, onRoomName, newRoomName);
     
     thermostat.Initialize(DeviceName);

@@ -21,10 +21,10 @@ namespace GoogleNest
         public ErrorMsg onErrorMessage { get; set; }
         public IsInitialized onIsInitialized { get; set; }
 
-        
-        private string refreshTokenFilePath = string.Format(@"\user\{0}\", Directory.GetApplicationDirectory().Split('\\')[2]);
+        private string refreshTokenFilePath;
         private string refreshTokenFileName = "google_nest_config";
         private string refreshToken;
+        private string fileSpecialChar;
         
         private CTimer refreshTimer;
 
@@ -37,6 +37,8 @@ namespace GoogleNest
         {
             try
             {
+                refreshTokenFilePath = string.Format(@"\user\{0}\", Directory.GetApplicationDirectory().Replace("/", "\\").Split('\\')[2]);
+
                 if (File.Exists(refreshTokenFilePath + refreshTokenFileName))
                 {
                     using (StreamReader reader = new StreamReader(File.OpenRead(refreshTokenFilePath + refreshTokenFileName)))
@@ -100,6 +102,8 @@ namespace GoogleNest
                 {
                     onIsInitialized(0);
                 }
+
+                ErrorLog.Exception("Exception ocurred in Initialize", e);
             }
         }
 

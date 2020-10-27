@@ -50,6 +50,38 @@ namespace GoogleNest
             }
         }
 
+        internal string PostCommand(string body)
+        {
+            try
+            {
+                using (HttpsClient client = new HttpsClient())
+                {
+                    client.TimeoutEnabled = true;
+                    client.Timeout = 10;
+                    client.HostVerification = false;
+                    client.PeerVerification = false;
+                    client.AllowAutoRedirect = false;
+
+                    HttpsClientRequest request = new HttpsClientRequest();
+
+                    request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID);
+                    request.RequestType = RequestType.Post;
+                    request.Header.ContentType = "application/json";
+                    request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", GoogleNestCloud.TokenType, GoogleNestCloud.Token)));
+
+                    request.ContentString = body;
+
+                    HttpsClientResponse response = client.Dispatch(request);
+
+                    return response.ContentString;
+                }
+            }
+            catch (Exception e)
+            {
+                return string.Empty;
+            }
+        }
+
         public void GetDevice()
         {
             try
