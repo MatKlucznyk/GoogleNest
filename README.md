@@ -4,7 +4,7 @@ Crestron S# library for controlling google nest devices
 To get started you will need to enable the Smart Device Managment API for the Device Access Sandbox through this link: https://developers.google.com/nest/device-access
 There is a one time fee of $5 for 25 user accounts across 5 structures.
 
-Next you'll need to create an Oauth2 cleint ID at this link: https://console.developers.google.com/apis/credential
+Next you'll need to create an Oauth2 cleint ID at this link: https://console.developers.google.com/apis/credentials
 
 Copy the client ID and head back to the Device Access Sandbox at this link: https://console.nest.google.com/device-access/project-list
 
