@@ -3,14 +3,14 @@
 #INCLUDEPATH "C:\\Users\\mathew.klucznyk\\OneDrive - Global USS\\Crestron Modules\\Mat\\SIMPLSharp Projects\\GoogleNest\\GoogleNest\\GoogleNest\\bin\\Debug"
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
-digital_input GetDevice;
-analog_input SetCoolSetpoint, SetHeatSetpoint;
+digital_input GetDevice, _skip_, Heat, Cool, HeatCool, _skip_, RunFan15_Mins, RunFan30_Mins, RunFan45_Mins, RunFan1_Hour, RunFan2_Hours, RunFan4_Hours, RunFan8_Hours, RunFan12_Hours, _skip_, EcoManualEco, EcoOff;
+analog_input _skip_, CoolSetpoint, HeatSetpoint;
 
-digital_output IsOnline, FanIsOn, IsEcoMode, IsCelsius, IsFahreniheit;
-analog_output HumidityPercentage, CurrentMode, CurrentEcoMode, CurrentEcoHeatSetPoint, CurrentEcoCoolSetPoint, CurrentHeatSetPoint, CurrentCoolSetPoint, CurrentTemperature;
+digital_output IsOnline, _skip_, HvacIsHeat, HvacIsCool, HvacIsHeatCool, HvacIsOff, HvacIsHeating, HvacIsCooling, HvacIsIdle, IsCelsius, IsFahrenheit, _skip_, FanIsOn, _skip_, EcoIsManualEco, EcoIsOff;
+analog_output _skip_, HumidityPercentage, CurrentHeatSetpoint, CurrentCoolSetpoint, _skip_, CurrentEcoHeatSetpoint, CurrentEcoCoolSetpoint, _skip_, CurrentTemperature;
 string_output CurrentTemperatureString, RoomName;
 
-string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
 
@@ -19,30 +19,95 @@ push GetDevice
     thermostat.GetDevice();
 }
 
-threadsafe change SetCoolSetpoint
+push Heat
+{
+    thermostat.SetHvacMode("HEAT");
+}
+
+push Cool
+{
+    thermostat.SetHvacMode("COOL");
+}
+
+push HeatCool
+{
+    thermostat.SetHvacMode("HEATCOOL");
+}
+
+push RunFan15_Mins
+{
+    thermostat.RunFan(900);
+}
+
+push RunFan30_Mins
+{
+    thermostat.RunFan(1800);
+}
+
+push RunFan45_Mins
+{
+    thermostat.RunFan(2700);
+}
+
+push RunFan1_Hour
+{
+    thermostat.RunFan(3600);
+}
+
+push RunFan2_Hours
+{
+    thermostat.RunFan(7200);
+}
+
+push RunFan4_Hours
+{
+    thermostat.RunFan(14400);
+}
+
+push RunFan8_Hours
+{
+    thermostat.RunFan(28800);
+}
+
+push RunFan12_Hours
+{
+    thermostat.RunFan(43200);
+}
+
+push EcoManualEco
+{
+    thermostat.SetEcoMode("MANUAL_ECO");
+}
+
+push EcoOff
+{
+    thermostat.SetEcoMode("OFF");
+}
+
+threadsafe change CoolSetpoint
 {
     integer x;
 
-    Seed(CurrentCoolSetPoint);
+    Seed(CurrentCoolSetpoint);
     x = Random(1, 65534);
 
-    while(x != SetCoolSetpoint)
+    while(x != CoolSetpoint)
     {
-        x = SetCoolSetpoint;
+        x = CoolSetpoint;
         thermostat.SetCool(x);
     }
 }
 
-threadsafe change SetHeatSetpoint
+threadsafe change HeatSetpoint
 {
     integer x;
 
-    Seed(CurrentHeatSetPoint);
+    Seed(CurrentHeatSetpoint);
     x = Random(1, 65534);
 
-    while(x != SetHeatSetpoint)
+    while(x != HeatSetpoint)
     {
-        x = SetHeatSetpoint;
+        x = HeatSetpoint;
         thermostat.SetHeat(x);
     }
 }
@@ -67,11 +132,13 @@ callback function newEcoModeState(string args)
 {
     if(args = "OFF")
     {
-        CurrentEcoMode = 0;
+        EcoIsManualEco = OFF;
+        EcoIsOff = ON;
     }
     if(args = "MANUAL_ECO")
     {
-        CurrentEcoMode = 1;
+        EcoIsManualEco = ON;
+        EcoIsOff = OFF;
     }
 }
 
@@ -80,12 +147,12 @@ callback function newTemperatureMode(string args)
     if(args = "CELSIUS")
     {
         IsCelsius = ON;
-        IsFahreniheit = OFF;
+        IsFahrenheit = OFF;
     }
-    else if(args = "FAHRENIHEIT")
+    else if(args = "FAHRENHEIT")
     {
         IsCelsius = OFF;
-        IsFahreniheit = ON;
+        IsFahrenheit = ON;
     }
 }
 
@@ -98,45 +165,79 @@ callback function newCurrentMode(string args)
 {
     if(args = "HEAT")
     {
-        CurrentMode = 1;
+        HvacIsHeat = ON;
+        HvacIsCool = OFF;
+        HvacIsHeatCool = OFF;
+        HvacIsOff = OFF;
     }
     else if(args = "COOL")
     {
-        CurrentMode = 2;
+        HvacIsHeat = OFF;
+        HvacIsCool = ON;
+        HvacIsHeatCool = OFF;
+        HvacIsOff = OFF;
     }
     else if(args = "HEATCOOL")
     {
-        CurrentMode = 3;
+        HvacIsHeat = OFF;
+        HvacIsCool = OFF;
+        HvacIsHeatCool = ON;
+        HvacIsOff = OFF;
     }
     else if(args = "OFF")
     {
-        CurrentMode = 0;
+        HvacIsHeat = OFF;
+        HvacIsCool = OFF;
+        HvacIsHeatCool = OFF;
+        HvacIsOff = ON;
     }
 }
 
 callback function newEcoHeatSetPoint(integer args)
 {
-    CurrentEcoHeatSetPoint = args;
+    CurrentEcoHeatSetpoint = args;
 }
 
 callback function newEcoCoolSetPoint(integer args)
 {
-    CurrentEcoCoolSetPoint = args;
+    CurrentEcoCoolSetpoint = args;
 } 
 
-callback function newCurrentHeatSetPoint(integer args)
+callback function newCurrentHeatSetpoint(integer args)
 {
-    CurrentHeatSetPoint = args;
+    CurrentHeatSetpoint = args;
 }
 
-callback function newCurrentCoolSetPoint(integer args)
+callback function newCurrentCoolSetpoint(integer args)
 {
-    CurrentCoolSetPoint = args;
+    CurrentCoolSetpoint = args;
 }
 
 callback function newRoomName(string name)
 {
     RoomName = name;
+}
+
+callback function newCurrentHvac(string hvac)
+{
+    if(hvac = "HEATING")
+    {
+        HvacIsHeating = ON;
+        HvacIsCooling = OFF;
+        HvacIsIdle = OFF;
+    }
+    else if(hvac = "COOLING")
+    {
+        HvacIsHeating = OFF;
+        HvacIsCooling = ON;
+        HvacIsIdle = OFF;
+    }
+    else if(hvac = "OFF")
+    {
+        HvacIsHeating = OFF;
+        HvacIsCooling = OFF;
+        HvacIsIdle = ON;
+    }
 }
 
 function Main()
@@ -150,9 +251,10 @@ function Main()
     RegisterDelegate(thermostat, onCurrentMode, newCurrentMode);
     RegisterDelegate(thermostat, onEcoHeatSetPoint, newEcoHeatSetPoint);
     RegisterDelegate(thermostat, onEcoCoolSetPoint, newEcoCoolSetPoint);
-    RegisterDelegate(thermostat, onCurrentHeatSetPoint, newCurrentHeatSetPoint);
-    RegisterDelegate(thermostat, onCurrentCoolSetPoint, newCurrentCoolSetPoint);
+    RegisterDelegate(thermostat, onCurrentHeatSetPoint, newCurrentHeatSetpoint);
+    RegisterDelegate(thermostat, onCurrentCoolSetPoint, newCurrentCoolSetpoint);
     RegisterDelegate(thermostat, onRoomName, newRoomName);
+    RegisterDelegate(thermostat, onCurrentHvac, newCurrentHvac);
     
     thermostat.Initialize(DeviceName);
 }

@@ -64,7 +64,7 @@ namespace GoogleNest
 
                     HttpsClientRequest request = new HttpsClientRequest();
 
-                    request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID);
+                    request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID + ":executeCommand");
                     request.RequestType = RequestType.Post;
                     request.Header.ContentType = "application/json";
                     request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", GoogleNestCloud.TokenType, GoogleNestCloud.Token)));

@@ -22,6 +22,7 @@ namespace GoogleNest
         public delegate void CurrentHeatSetPoint(ushort value);
         public delegate void CurrentCoolSetPoint(ushort value);
         public delegate void CurrentTemperature(ushort value, SimplSharpString sValue);
+        public delegate void CurrentHvac(SimplSharpString hvac);
         public Online onOnline { get; set; }
         public FanState onFanState { get; set; }
         public EcoModeState onEcoModeState { get; set; }
@@ -33,6 +34,15 @@ namespace GoogleNest
         public CurrentHeatSetPoint onCurrentHeatSetPoint { get; set; }
         public CurrentCoolSetPoint onCurrentCoolSetPoint { get; set; }
         public CurrentTemperature onCurrentTemperature { get; set; }
+        public CurrentHvac onCurrentHvac { get; set; }
+
+        private CTimer fanTimer;
+
+        public GoogleNestThermostat()
+        {
+            fanTimer = new CTimer(FanTimerCompleted, 1000);
+            fanTimer.Stop();
+        }
 
         internal override void ParseData(JToken deviceData)
         {
@@ -81,7 +91,17 @@ namespace GoogleNest
                         }
                         else
                         {
+                            fanTimer.Stop();
                             onFanState(0);
+                        }
+                        if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"] != null)
+                        {
+                            var time = deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"].ToString().Replace("\"", string.Empty);
+
+                            var timeout = DateTime.Parse(time);
+                            var timerSetting = timeout - DateTime.Now;
+
+                            fanTimer.Reset(timerSetting.Milliseconds);
                         }
                     }
                 }
@@ -126,14 +146,21 @@ namespace GoogleNest
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (onCurrentCoolSetPoint != null)
-                            onCurrentHeatSetPoint((ushort)(temp * 10));
+                            onCurrentCoolSetPoint((ushort)(temp * 10));
                     }
-                    else if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
+                    if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (onCurrentHeatSetPoint != null)
                             onCurrentHeatSetPoint((ushort)(temp * 10));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.ThermostatHvac"] != null)
+                {
+                    if (onCurrentHvac != null)
+                    {
+                        onCurrentHvac(deviceData["traits"]["sdm.devices.traits.ThermostatHvac"]["status"].ToString().Replace("\"", string.Empty));
                     }
                 }
             }
@@ -195,6 +222,84 @@ namespace GoogleNest
             catch (Exception e)
             {
             }
+        }
+
+        public void RunFan(ushort timeInSeconds)
+        {
+            try
+            {
+                if (timeInSeconds > 0)
+                {
+                    var response = PostCommand("{\"command\":\"sdm.devices.commands.Fan.SetTimer\",\"params\":{\"timerMode\":\"ON\",\"duration\":\"" + timeInSeconds + "s\"}}");
+
+                    if (response != null)
+                    {
+                        if (response.Length > 0)
+                        {
+                            if (response == "{}\n")
+                            {
+                                fanTimer.Reset(timeInSeconds * 1000);
+
+                                if (onFanState != null)
+                                    onFanState(1);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        public void SetHvacMode(string mode)
+        {
+            try
+            {
+                var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatMode.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}");
+
+                    if (response != null)
+                    {
+                        if (response.Length > 0)
+                        {
+                            if (response == "{}\n")
+                            {
+                                GetDevice();
+                            }
+                        }
+                    }
+                }
+            catch (Exception e)
+            {
+            }
+        }
+
+        public void SetEcoMode(string mode)
+        {
+            try
+            {
+                var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatEco.SetMode\",\"params\":{\"mode\":\"" + mode + "\"}}");
+
+                if (response != null)
+                {
+                    if (response.Length > 0)
+                    {
+                        if (response == "{}\n")
+                        {
+                            GetDevice();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        private void FanTimerCompleted(object o)
+        {
+            if (onFanState != null)
+                onFanState(0);
         }
     }
 }
