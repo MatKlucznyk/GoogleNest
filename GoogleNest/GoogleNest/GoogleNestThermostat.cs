@@ -37,6 +37,7 @@ namespace GoogleNest
         public CurrentHvac onCurrentHvac { get; set; }
 
         private CTimer fanTimer;
+        private bool isFahrenheit;
 
         public GoogleNestThermostat()
         {
@@ -71,7 +72,12 @@ namespace GoogleNest
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
-                        onCurrentTemperature((ushort)(temp * 10), deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty));
+                        if (isFahrenheit)
+                        {
+                            temp = CelsiusToFahrenHeit(temp);
+                        }
+
+                        onCurrentTemperature((ushort)(temp * 10), temp.ToString());
                     }
                 }
                 if (deviceData["traits"]["sdm.devices.traits.Humidity"] != null)
@@ -122,11 +128,21 @@ namespace GoogleNest
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
+                        if (isFahrenheit)
+                        {
+                            temp = CelsiusToFahrenHeit(temp);
+                        }
+
                         onEcoHeatSetPoint((ushort)(temp * 10));
                     }
                     if (onEcoCoolSetPoint != null)
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                        if (isFahrenheit)
+                        {
+                            temp = CelsiusToFahrenHeit(temp);
+                        }
 
                         onEcoCoolSetPoint((ushort)(temp * 10));
                     }
@@ -135,6 +151,15 @@ namespace GoogleNest
                 {
                     if (onTemperatureMode != null)
                     {
+                        if (deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty) == "FAHRENHEIT")
+                        {
+                            isFahrenheit = true;
+                        }
+                        else
+                        {
+                            isFahrenheit = false;
+                        }
+
                         onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
                     }
                 }
@@ -145,12 +170,22 @@ namespace GoogleNest
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
+                        if (isFahrenheit)
+                        {
+                            temp = CelsiusToFahrenHeit(temp);
+                        }
+
                         if (onCurrentCoolSetPoint != null)
                             onCurrentCoolSetPoint((ushort)(temp * 10));
                     }
                     if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
                     {
                         double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                        if (isFahrenheit)
+                        {
+                            temp = CelsiusToFahrenHeit(temp);
+                        }
 
                         if (onCurrentHeatSetPoint != null)
                             onCurrentHeatSetPoint((ushort)(temp * 10));
@@ -170,11 +205,15 @@ namespace GoogleNest
         {
             try
             {
-                if (setPoint >= 90 && setPoint <= 320)
+                double sPoint = sPoint = Math.Round((setPoint / 10.0), 1);
+
+                if (isFahrenheit)
                 {
+                    sPoint = FahrenheitToCelsius(sPoint);
+                }
 
-                    var sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
-
+                if (sPoint >= 90 && sPoint <= 320)
+                {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetCool\",\"params\":{\"coolCelsius\":" + sPoint + "}}");
 
                     if (response != null)
@@ -199,11 +238,15 @@ namespace GoogleNest
         {
             try
             {
-                if (setPoint >= 90 && setPoint <= 320)
+                double sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
+
+                if (isFahrenheit)
                 {
+                    sPoint = FahrenheitToCelsius(sPoint);
+                }
 
-                    var sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
-
+                if (sPoint >= 90 && sPoint <= 320)
+                {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + sPoint + "}}");
 
                     if (response != null)
@@ -214,6 +257,44 @@ namespace GoogleNest
                             {
                                 if (onCurrentHeatSetPoint != null)
                                     onCurrentHeatSetPoint(setPoint);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        public void SetRange(ushort heat, ushort cool)
+        {
+            try
+            {
+                var HsPoint = Math.Round((Convert.ToDouble(heat) / 10.0), 1);
+                var CsPoint = Math.Round((Convert.ToDouble(cool) / 10.0), 1);
+
+                if (isFahrenheit)
+                {
+                    HsPoint = FahrenheitToCelsius(HsPoint);
+                    CsPoint = FahrenheitToCelsius(CsPoint);
+                }
+
+                if (HsPoint >= 90 && HsPoint <= 320 && CsPoint >= 90 && CsPoint <= 320)
+                {
+                    var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetRange\",\"params\":{\"heatCelsius\":" + HsPoint + ",\"coolCelsius\":" + CsPoint + "}}");
+
+                    if (response != null)
+                    {
+                        if (response.Length > 0)
+                        {
+                            if (response == "{}\n")
+                            {
+                                if (onCurrentHeatSetPoint != null)
+                                    onCurrentHeatSetPoint(heat);
+
+                                if (onCurrentCoolSetPoint != null)
+                                    onCurrentCoolSetPoint(cool);
                             }
                         }
                     }
@@ -300,6 +381,16 @@ namespace GoogleNest
         {
             if (onFanState != null)
                 onFanState(0);
+        }
+
+        private double CelsiusToFahrenHeit(double temp)
+        {
+            return (temp * (9 / 5)) + 32;
+        }
+
+        private double FahrenheitToCelsius(double temp)
+        {
+            return (temp - 32) * (5 / 9);
         }
     }
 }

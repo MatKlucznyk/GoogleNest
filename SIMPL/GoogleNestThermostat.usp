@@ -94,7 +94,15 @@ threadsafe change CoolSetpoint
     while(x != CoolSetpoint)
     {
         x = CoolSetpoint;
-        thermostat.SetCool(x);
+
+        if(HvacIsCooling)
+        {
+            thermostat.SetCool(x);
+        }
+        else if(HvacIsHeatCool)
+        {
+            thermostat.SetRange(HeatSetpoint, x);
+        }
     }
 }
 
@@ -108,7 +116,14 @@ threadsafe change HeatSetpoint
     while(x != HeatSetpoint)
     {
         x = HeatSetpoint;
-        thermostat.SetHeat(x);
+        if(HvacIsHeat)
+        {
+            thermostat.SetHeat(x);
+        }
+        else if(HvacIsHeatCool)
+        {
+            thermostat.SetRange(x, CoolSetpoint);
+        }
     }
 }
 
