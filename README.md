@@ -1,6 +1,8 @@
 # GoogleNest
 Crestron S# library for controlling google nest devices
 
+Current code supports only thermostats for 3-series and 4-series. I will be creating a branch for 4-series only that will support more events from thermostats and other devices.
+
 To get started you will need to enable the Smart Device Managment API for the Device Access Sandbox through this link: https://developers.google.com/nest/device-access
 There is a one time fee of $5 for 25 user accounts across 5 structures.
 
