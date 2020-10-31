@@ -16,3 +16,5 @@ To get an auth code, change the project-id field and the oauth2-client-id parame
 scope=https://wwwgoogleapis.com/auth/sdm.service
 
 Once you return to the google page, in the URI, you'll find the auth code. Copy it down and send the full code to the AuthCode serial signal. Next trigger the Initialize signal. Once the initial initialization is complete, a refresh token will take care of authorizing from here on out as long as the processor is online once every six months.
+
+Set points are 1*10, 22.5 degrees Celsius would be 225d. Valid ranges are 90-320 (9-32 degrees Celsius) or the Fahrenheit equivalent.
