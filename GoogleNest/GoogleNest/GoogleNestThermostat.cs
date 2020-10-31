@@ -65,7 +65,22 @@ namespace GoogleNest
                         onOnline(0);
                     }
                 }
+                if (deviceData["traits"]["sdm.devices.traits.Settings"] != null)
+                {
+                    if (onTemperatureMode != null)
+                    {
+                        if (deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty) == "FAHRENHEIT")
+                        {
+                            isFahrenheit = true;
+                        }
+                        else
+                        {
+                            isFahrenheit = false;
+                        }
 
+                        onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
+                    }
+                }
                 if (deviceData["traits"]["sdm.devices.traits.Temperature"] != null)
                 {
                     if (onCurrentTemperature != null)
@@ -145,22 +160,6 @@ namespace GoogleNest
                         }
 
                         onEcoCoolSetPoint((ushort)(temp * 10));
-                    }
-                }
-                if (deviceData["traits"]["sdm.devices.traits.Settings"] != null)
-                {
-                    if (onTemperatureMode != null)
-                    {
-                        if (deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty) == "FAHRENHEIT")
-                        {
-                            isFahrenheit = true;
-                        }
-                        else
-                        {
-                            isFahrenheit = false;
-                        }
-
-                        onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
                     }
                 }
                 if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"] != null)
