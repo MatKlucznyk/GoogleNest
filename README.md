@@ -6,7 +6,7 @@ Current code supports only thermostats for 3-series and 4-series. I will be crea
 To get started you will need to enable the Smart Device Managment API for the Device Access Sandbox through this link: https://developers.google.com/nest/device-access
 There is a one time fee of $5 for 25 user accounts across 5 structures.
 
-Next you'll need to create an Oauth2 client ID and Client Secret at this link: https://console.developers.google.com/apis/credentials
+Next you'll need to create an Oauth2 client ID and Client Secret at this link: https://console.developers.google.com/apis/credentials (make sure to set the URI to www.google.com)
 
 Copy the client ID and Client Secret and head back to the Device Access Sandbox at this link: https://console.nest.google.com/device-access/project-list
 
