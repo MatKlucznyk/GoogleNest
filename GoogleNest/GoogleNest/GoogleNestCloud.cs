@@ -243,6 +243,11 @@ namespace GoogleNest
                         {
                             JObject body = JObject.Parse(response.ContentString);
 
+                            if (body["error"] != null)
+                            {
+                                onErrorMessage(body["error"]["message"].ToString().Replace("\"", string.Empty));
+                            }
+
                             foreach (var dev in body["devices"])
                             {
                                 if (devices.ContainsKey(dev["traits"]["sdm.devices.traits.Info"]["customName"].ToString().Replace("\"", string.Empty)))

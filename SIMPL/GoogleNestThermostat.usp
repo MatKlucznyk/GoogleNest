@@ -8,9 +8,9 @@ analog_input _skip_, CoolSetpoint, HeatSetpoint;
 
 digital_output IsOnline, _skip_, HvacIsHeat, HvacIsCool, HvacIsHeatCool, HvacIsOff, HvacIsHeating, HvacIsCooling, HvacIsIdle, IsCelsius, IsFahrenheit, _skip_, FanIsOn, _skip_, EcoIsManualEco, EcoIsOff;
 analog_output _skip_, HumidityPercentage, CurrentHeatSetpoint, CurrentCoolSetpoint, _skip_, CurrentEcoHeatSetpoint, CurrentEcoCoolSetpoint, _skip_, CurrentTemperature;
-string_output CurrentTemperatureString, RoomName;
+string_output CurrentTemperatureString, RoomName, ErrorMessage;
 
-string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
 
@@ -255,6 +255,11 @@ callback function newCurrentHvac(string hvac)
     }
 }
 
+callback function newErrorMsg(string msg)
+{
+    ErrorMessage = msg;
+}
+
 function Main()
 {
     RegisterDelegate(thermostat, onOnline, newOnline);
@@ -270,6 +275,7 @@ function Main()
     RegisterDelegate(thermostat, onCurrentCoolSetPoint, newCurrentCoolSetpoint);
     RegisterDelegate(thermostat, onRoomName, newRoomName);
     RegisterDelegate(thermostat, onCurrentHvac, newCurrentHvac);
+    RegisterDelegate(thermostat, onErrorMsg, newErrorMsg);
     
     thermostat.Initialize(DeviceName);
 }

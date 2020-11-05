@@ -117,6 +117,8 @@
   OutputList2SigType10=Serial
   OutputList2Cue11=RoomName
   OutputList2SigType11=Serial
+  OutputList2Cue12=ErrorMessage
+  OutputList2SigType12=Serial
   ParamCue1=[Reference Name]
   ParamCue2=[~UNUSED~]
   ParamSigType2=Constant
@@ -172,18 +174,20 @@
   ParamSigType27=Constant
   ParamCue28=[~UNUSED~]
   ParamSigType28=Constant
-  ParamCue29=DeviceName
-  ParamSigType29=String
+  ParamCue29=[~UNUSED~]
+  ParamSigType29=Constant
+  ParamCue30=DeviceName
+  ParamSigType30=String
   MinVariableInputs=17
   MaxVariableInputs=17
   MinVariableInputsList2=3
   MaxVariableInputsList2=3
   MinVariableOutputs=16
   MaxVariableOutputs=16
-  MinVariableOutputsList2=11
-  MaxVariableOutputsList2=11
-  MinVariableParams=28
-  MaxVariableParams=28
+  MinVariableOutputsList2=12
+  MaxVariableOutputsList2=12
+  MinVariableParams=29
+  MaxVariableParams=29
   Expand=expand_separately
   Expand2=expand_separately
   ProgramTree=Logic
@@ -198,8 +202,8 @@
   CompilerParamCode5=14
   NumFixedParams=1
   Pp1=1
-  Pp29=29
-  MPp=29
+  Pp30=30
+  MPp=30
   NVStorage=10
   ParamSigType1=String
   SmplCInputCue1=o#
@@ -220,7 +224,7 @@
 [END]
 [BEGIN]
   ObjTp=Dp
-  H=29
+  H=30
   Tp=1
   HD=False
   NoS=False
