@@ -41,10 +41,12 @@ namespace GoogleNest
 
         public GoogleNestThermostat()
         {
+            //Setup fan timer
             fanTimer = new CTimer(FanTimerCompleted, 1000);
             fanTimer.Stop();
         }
 
+        //Parse data related to thermostats
         internal override void ParseData(JToken deviceData)
         {
             base.ParseData(deviceData);
@@ -200,6 +202,7 @@ namespace GoogleNest
             }
         }
 
+        //Set cool setopoint
         public void SetCool(ushort setPoint)
         {
             try
@@ -233,6 +236,7 @@ namespace GoogleNest
             }
         }
 
+        //Set heat setpoint
         public void SetHeat(ushort setPoint)
         {
             try
@@ -266,6 +270,7 @@ namespace GoogleNest
             }
         }
 
+        //Set heat/cool range setpoints
         public void SetRange(ushort heat, ushort cool)
         {
             try
@@ -304,6 +309,7 @@ namespace GoogleNest
             }
         }
 
+        //Run fan for specified time
         public void RunFan(ushort timeInSeconds)
         {
             try
@@ -332,6 +338,7 @@ namespace GoogleNest
             }
         }
 
+        //Set HVAC mode to heat, cool or heat/cool
         public void SetHvacMode(string mode)
         {
             try
@@ -354,6 +361,7 @@ namespace GoogleNest
             }
         }
 
+        //Turn eco mode on or off
         public void SetEcoMode(string mode)
         {
             try
@@ -376,17 +384,20 @@ namespace GoogleNest
             }
         }
 
+        //Fan timer has completed fan is now off
         private void FanTimerCompleted(object o)
         {
             if (onFanState != null)
                 onFanState(0);
         }
 
+        //Convert celsius to fahrenheit
         private double CelsiusToFahrenHeit(double temp)
         {
             return (temp * (9 / 5)) + 32;
         }
 
+        //Convert fahrenheit to celcius
         private double FahrenheitToCelsius(double temp)
         {
             return (temp - 32) * (5 / 9);

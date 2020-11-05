@@ -24,7 +24,6 @@ namespace GoogleNest
         private string refreshTokenFilePath;
         private string refreshTokenFileName = "google_nest_config";
         private string refreshToken;
-        private string fileSpecialChar;
         
         private CTimer refreshTimer;
 
@@ -33,6 +32,7 @@ namespace GoogleNest
         internal static string TokenType;
         internal static Dictionary<string, GoogleNestDevice> devices = new Dictionary<string, GoogleNestDevice>();
 
+        //Check if refresh token file exists and consume if it does
         public void Initialize()
         {
             try
@@ -107,6 +107,7 @@ namespace GoogleNest
             }
         }
 
+        //Use refresh token to request a session token
         private void UseRefreshToken(object o)
         {
             try
@@ -157,6 +158,7 @@ namespace GoogleNest
             }
         }
 
+        //Use authorization code to retrieve a refresh token and a session token
         private void GetTokenAndRefreshToken()
         {
             try
@@ -216,6 +218,7 @@ namespace GoogleNest
             }
         }
 
+        //Get all devices
         public void GetDevices()
         {
             try

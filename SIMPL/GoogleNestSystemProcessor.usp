@@ -1,6 +1,5 @@
 #SYMBOL_NAME "Google Nest System Processor"
 
-#INCLUDEPATH "C:\\Users\\mathew.klucznyk\\OneDrive - Global USS\\Crestron Modules\\Mat\\SIMPLSharp Projects\\GoogleNest\\GoogleNest\\GoogleNest\\bin\\Debug"
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
 digital_input Initialize;

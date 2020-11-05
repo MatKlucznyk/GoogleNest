@@ -1,6 +1,5 @@
 #SYMBOL_NAME "Google Nest Thermostat"
 
-#INCLUDEPATH "C:\\Users\\mathew.klucznyk\\OneDrive - Global USS\\Crestron Modules\\Mat\\SIMPLSharp Projects\\GoogleNest\\GoogleNest\\GoogleNest\\bin\\Debug"
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
 digital_input GetDevice, _skip_, Heat, Cool, HeatCool, _skip_, RunFan15_Mins, RunFan30_Mins, RunFan45_Mins, RunFan1_Hour, RunFan2_Hours, RunFan4_Hours, RunFan8_Hours, RunFan12_Hours, _skip_, EcoManualEco, EcoOff;

@@ -22,6 +22,7 @@ namespace GoogleNest
 
         internal string DeviceID;
 
+        //Add this device to list in GoogleNestCloud
         public void Initialize(string deviceName)
         {
             this.deviceName = deviceName;
@@ -36,7 +37,9 @@ namespace GoogleNest
                 GetDevice();
             }
         }
-            
+        
+    
+        //Parse device data
         internal virtual void ParseData(JToken deviceData)
         {
             if (deviceData["name"] != null)
@@ -52,6 +55,7 @@ namespace GoogleNest
             }
         }
 
+        //Post HTTPS command
         internal string PostCommand(string body)
         {
             try
@@ -91,6 +95,7 @@ namespace GoogleNest
             }
         }
 
+        //Get device info
         public void GetDevice()
         {
             try
