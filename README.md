@@ -13,7 +13,7 @@ Copy the client ID and Client Secret and head back to the Device Access Sandbox 
 Create a project and copy the Oauth2 client ID into Client ID field. Copy the Client ID, Client Secret and Project ID and enter them into the Google Nest System Processor module.
 
 To get an auth code, change the project-id field and the oauth2-client-id parameter you've copied down in this link and then follow this link;  https://nestservices.google.com/partnerconnections/project-id/auth?redirect_uri=https://www.google.com&access_type=offline&prompt=consent&client_id=oauth2-client-id&response_type=code&
-scope=https://wwwgoogleapis.com/auth/sdm.service
+scope=https://www.googleapis.com/auth/sdm.service
 
 Once you return to the google page, in the URI, you'll find the auth code. Copy it down and send the full code to the AuthCode serial signal. Next trigger the Initialize signal. Once the initial initialization is complete, a refresh token will take care of authorizing from here on out as long as the processor is online once every six months.
 
