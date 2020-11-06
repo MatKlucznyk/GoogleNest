@@ -2,14 +2,14 @@
 
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
-digital_input GetDevice, _skip_, Heat, Cool, HeatCool, _skip_, RunFan15_Mins, RunFan30_Mins, RunFan45_Mins, RunFan1_Hour, RunFan2_Hours, RunFan4_Hours, RunFan8_Hours, RunFan12_Hours, _skip_, EcoManualEco, EcoOff;
-analog_input _skip_, CoolSetpoint, HeatSetpoint;
+digital_input GetDevice, _skip_, Heat, Cool, HeatCool, HvacOff, RunFan15_Mins, RunFan30_Mins, RunFan45_Mins, RunFan1_Hour, RunFan2_Hours, RunFan4_Hours, RunFan8_Hours, RunFan12_Hours, FanOff, _skip_, EcoManualEco, EcoOff;
+analog_input _skip_, _skip_, CoolSetpoint, HeatSetpoint;
 
-digital_output IsOnline, _skip_, HvacIsHeat, HvacIsCool, HvacIsHeatCool, HvacIsOff, HvacIsHeating, HvacIsCooling, HvacIsIdle, IsCelsius, IsFahrenheit, _skip_, FanIsOn, _skip_, EcoIsManualEco, EcoIsOff;
+digital_output IsOnline, _skip_, HvacIsHeat, HvacIsCool, HvacIsHeatCool, HvacIsOff, HvacIsHeating, HvacIsCooling, HvacIsIdle, IsCelsius, IsFahrenheit, _skip_, _skip_, FanIsOn, _skip_, _skip_, EcoIsManualEco, EcoIsOff;
 analog_output _skip_, HumidityPercentage, CurrentHeatSetpoint, CurrentCoolSetpoint, _skip_, CurrentEcoHeatSetpoint, CurrentEcoCoolSetpoint, _skip_, CurrentTemperature;
 string_output CurrentTemperatureString, RoomName, ErrorMessage;
 
-string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
 
@@ -31,6 +31,11 @@ push Cool
 push HeatCool
 {
     thermostat.SetHvacMode("HEATCOOL");
+}
+
+push HvacOff
+{
+    thermostat.SetHvacMode("OFF");
 }
 
 push RunFan15_Mins
@@ -71,6 +76,11 @@ push RunFan8_Hours
 push RunFan12_Hours
 {
     thermostat.RunFan(43200);
+}
+
+push FanOff
+{
+    thermostat.FanOff();
 }
 
 push EcoManualEco

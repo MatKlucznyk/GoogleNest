@@ -49,8 +49,10 @@ namespace GoogleNest
         //Parse data related to thermostats
         internal override void ParseData(JToken deviceData)
         {
+            //calls base class global device trai parsing
             base.ParseData(deviceData);
 
+            //check if connectivty trait exists to determine if we need to really parse data or not
             if (deviceData["traits"]["sdm.devices.traits.Connectivity"] != null)
             {
                 if (deviceData["traits"]["sdm.devices.traits.Connectivity"].ToString().Contains("ONLINE"))
@@ -207,6 +209,7 @@ namespace GoogleNest
         {
             try
             {
+                //convert s+ ushort to a double moving the percision byb 10
                 double sPoint = sPoint = Math.Round((setPoint / 10.0), 1);
 
                 if (isFahrenheit)
@@ -214,6 +217,7 @@ namespace GoogleNest
                     sPoint = FahrenheitToCelsius(sPoint);
                 }
 
+                //checks if set point is an allowable range
                 if (sPoint >= 9 && sPoint <= 32)
                 {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetCool\",\"params\":{\"coolCelsius\":" + sPoint + "}}");
@@ -241,6 +245,7 @@ namespace GoogleNest
         {
             try
             {
+                //convert s+ ushort to a double moving the percision by 10
                 double sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
 
                 if (isFahrenheit)
@@ -248,6 +253,7 @@ namespace GoogleNest
                     sPoint = FahrenheitToCelsius(sPoint);
                 }
 
+                //checks if set point is an allowable range
                 if (sPoint >= 9 && sPoint <= 32)
                 {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + sPoint + "}}");
@@ -275,6 +281,7 @@ namespace GoogleNest
         {
             try
             {
+                //convert s+ ushort to a double moving the percision byb 10
                 var HsPoint = Math.Round((Convert.ToDouble(heat) / 10.0), 1);
                 var CsPoint = Math.Round((Convert.ToDouble(cool) / 10.0), 1);
 
@@ -284,6 +291,7 @@ namespace GoogleNest
                     CsPoint = FahrenheitToCelsius(CsPoint);
                 }
 
+                //checks if set point is an allowable range
                 if (HsPoint >= 9 && HsPoint <= 32 && CsPoint >= 9 && CsPoint <= 32)
                 {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetRange\",\"params\":{\"heatCelsius\":" + HsPoint + ",\"coolCelsius\":" + CsPoint + "}}");
@@ -329,6 +337,30 @@ namespace GoogleNest
                                 if (onFanState != null)
                                     onFanState(1);
                             }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        //turn the fan off
+        public void FanOff()
+        {
+            try
+            {
+                var response = PostCommand("{\"command\":\"sdm.devices.commands.Fan.SetTimer\",\"params\":{\"timerMode\":\"OFF\"}}");
+
+                if (response != null)
+                {
+                    if (response.Length > 0)
+                    {
+                        if (response == "{}\n")
+                        {
+                            if (onFanState != null)
+                                onFanState(0);
                         }
                     }
                 }
