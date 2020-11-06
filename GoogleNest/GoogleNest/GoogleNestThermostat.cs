@@ -214,7 +214,7 @@ namespace GoogleNest
                     sPoint = FahrenheitToCelsius(sPoint);
                 }
 
-                if (sPoint >= 90 && sPoint <= 320)
+                if (sPoint >= 9 && sPoint <= 32)
                 {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetCool\",\"params\":{\"coolCelsius\":" + sPoint + "}}");
 
@@ -248,7 +248,7 @@ namespace GoogleNest
                     sPoint = FahrenheitToCelsius(sPoint);
                 }
 
-                if (sPoint >= 90 && sPoint <= 320)
+                if (sPoint >= 9 && sPoint <= 32)
                 {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat\",\"params\":{\"heatCelsius\":" + sPoint + "}}");
 
@@ -284,7 +284,7 @@ namespace GoogleNest
                     CsPoint = FahrenheitToCelsius(CsPoint);
                 }
 
-                if (HsPoint >= 90 && HsPoint <= 320 && CsPoint >= 90 && CsPoint <= 320)
+                if (HsPoint >= 9 && HsPoint <= 32 && CsPoint >= 9 && CsPoint <= 32)
                 {
                     var response = PostCommand("{\"command\":\"sdm.devices.commands.ThermostatTemperatureSetpoint.SetRange\",\"params\":{\"heatCelsius\":" + HsPoint + ",\"coolCelsius\":" + CsPoint + "}}");
 

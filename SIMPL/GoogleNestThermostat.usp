@@ -94,7 +94,7 @@ threadsafe change CoolSetpoint
     {
         x = CoolSetpoint;
 
-        if(HvacIsCooling)
+        if(HvacIsCool)
         {
             thermostat.SetCool(x);
         }

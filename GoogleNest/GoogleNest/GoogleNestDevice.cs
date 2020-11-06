@@ -53,6 +53,10 @@ namespace GoogleNest
                     onRoomName(deviceData["parentRelations"][0]["displayName"].ToString().Replace("\"", string.Empty));
                 }
             }
+            if (deviceData["error"] != null)
+            {
+                onErrorMsg(deviceData["error"]["message"].ToString().Replace("\"", string.Empty));
+            }
         }
 
         //Post HTTPS command
@@ -91,6 +95,7 @@ namespace GoogleNest
             }
             catch (Exception e)
             {
+                ErrorLog.Exception("Exception ocurred in PostCommand", e);
                 return string.Empty;
             }
         }
@@ -139,6 +144,7 @@ namespace GoogleNest
             }
             catch (Exception e)
             {
+                ErrorLog.Exception("Exception ocurred in GetDevice", e);
             }
         }
     }

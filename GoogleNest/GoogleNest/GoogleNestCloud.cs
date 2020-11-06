@@ -155,6 +155,7 @@ namespace GoogleNest
             }
             catch (Exception e)
             {
+                ErrorLog.Exception("Exception ocurred in UseRefreshToken", e);
             }
         }
 
@@ -215,6 +216,7 @@ namespace GoogleNest
             }
             catch (Exception e)
             {
+                ErrorLog.Exception("Exception ocurred in GetTokenAndRefreshToken", e);
             }
         }
 
@@ -264,6 +266,7 @@ namespace GoogleNest
             }
             catch (Exception e)
             {
+                ErrorLog.Exception("Exception ocurred in GetDevices", e);
             }
         }
     }
