@@ -89,7 +89,7 @@ namespace GoogleNest
                 {
                     if (onCurrentTemperature != null)
                     {
-                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (isFahrenheit)
                         {
@@ -145,7 +145,7 @@ namespace GoogleNest
                     }
                     if (onEcoHeatSetPoint != null)
                     {
-                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (isFahrenheit)
                         {
@@ -156,7 +156,7 @@ namespace GoogleNest
                     }
                     if (onEcoCoolSetPoint != null)
                     {
-                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.ThermostatEco"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (isFahrenheit)
                         {
@@ -171,7 +171,7 @@ namespace GoogleNest
                     //add farheniheit
                     if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"] != null)
                     {
-                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["coolCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (isFahrenheit)
                         {
@@ -183,7 +183,7 @@ namespace GoogleNest
                     }
                     if (deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"] != null)
                     {
-                        double temp = Math.Round(Convert.ToDouble(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
+                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.ThermostatTemperatureSetpoint"]["heatCelsius"].ToString().Replace("\"", string.Empty)), 1);
 
                         if (isFahrenheit)
                         {
@@ -210,7 +210,7 @@ namespace GoogleNest
             try
             {
                 //convert s+ ushort to a double moving the percision byb 10
-                double sPoint = sPoint = Math.Round((setPoint / 10.0), 1);
+                decimal sPoint = sPoint = Math.Round(((decimal)setPoint / (decimal)10.0), 1);
 
                 if (isFahrenheit)
                 {
@@ -246,7 +246,7 @@ namespace GoogleNest
             try
             {
                 //convert s+ ushort to a double moving the percision by 10
-                double sPoint = Math.Round((Convert.ToDouble(setPoint) / 10.0), 1);
+                decimal sPoint = Math.Round((decimal)setPoint / (decimal)10.0, 1);
 
                 if (isFahrenheit)
                 {
@@ -282,8 +282,8 @@ namespace GoogleNest
             try
             {
                 //convert s+ ushort to a double moving the percision byb 10
-                var HsPoint = Math.Round((Convert.ToDouble(heat) / 10.0), 1);
-                var CsPoint = Math.Round((Convert.ToDouble(cool) / 10.0), 1);
+                var HsPoint = Math.Round((decimal)(heat / (decimal)10.0), 1);
+                var CsPoint = Math.Round(((decimal)cool / (decimal)10.0), 1);
 
                 if (isFahrenheit)
                 {
@@ -424,15 +424,15 @@ namespace GoogleNest
         }
 
         //Convert celsius to fahrenheit
-        private double CelsiusToFahrenHeit(double temp)
+        private decimal CelsiusToFahrenHeit(decimal temp)
         {
-            return (temp * (9 / 5)) + 32;
+            return (temp * ((decimal)9.0 / (decimal)5.0)) + (decimal)32.0;
         }
 
         //Convert fahrenheit to celcius
-        private double FahrenheitToCelsius(double temp)
+        private decimal FahrenheitToCelsius(decimal temp)
         {
-            return (temp - 32) * (5 / 9);
+            return (temp - (decimal)32.0) * ((decimal)5.0 / (decimal)9.0);
         }
     }
 }
