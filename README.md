@@ -18,3 +18,5 @@ scope=https://www.googleapis.com/auth/sdm.service
 Once you return to the google page, in the URI, you'll find the auth code. Copy it down and send the full code to the AuthCode serial signal. Next trigger the Initialize signal. Once the initial initialization is complete, a refresh token will take care of authorizing from here on out as long as the processor is online once every six months.
 
 Set points/temperature joins are 1*10, 22.5 degrees Celsius would be 225d. Valid ranges are 90-320 (9-32 degrees Celsius) or the Fahrenheit equivalent.
+
+Please visit this URI which outlines the limitations of this API: https://developers.google.com/nest/device-access/project/limits#sandbox_rate_limits
