@@ -10,41 +10,22 @@ using Newtonsoft.Json.Linq;
 namespace GoogleNest
 {
     public class GoogleNestThermostat : GoogleNestDevice
-    {
-        public delegate void Online(ushort state);
-        public delegate void FanState(ushort state);
+    {     
         public delegate void EcoModeState(SimplSharpString mode);
-        public delegate void TemperatureMode(SimplSharpString mode);
-        public delegate void Humidity(ushort value);
+        
         public delegate void CurrentMode(SimplSharpString mode);
         public delegate void EcoHeatSetPoint(ushort value);
         public delegate void EcoCoolSetPoint(ushort value);
         public delegate void CurrentHeatSetPoint(ushort value);
         public delegate void CurrentCoolSetPoint(ushort value);
-        public delegate void CurrentTemperature(ushort value, SimplSharpString sValue);
         public delegate void CurrentHvac(SimplSharpString hvac);
-        public Online onOnline { get; set; }
-        public FanState onFanState { get; set; }
         public EcoModeState onEcoModeState { get; set; }
-        public TemperatureMode onTemperatureMode { get; set; }
-        public Humidity onHumidity { get; set; }
         public CurrentMode onCurrentMode { get; set; }
         public EcoHeatSetPoint onEcoHeatSetPoint { get; set; }
         public EcoCoolSetPoint onEcoCoolSetPoint { get; set; }
         public CurrentHeatSetPoint onCurrentHeatSetPoint { get; set; }
         public CurrentCoolSetPoint onCurrentCoolSetPoint { get; set; }
-        public CurrentTemperature onCurrentTemperature { get; set; }
         public CurrentHvac onCurrentHvac { get; set; }
-
-        private CTimer fanTimer;
-        private bool isFahrenheit;
-
-        public GoogleNestThermostat()
-        {
-            //Setup fan timer
-            fanTimer = new CTimer(FanTimerCompleted, 1000);
-            fanTimer.Stop();
-        }
 
         //Parse data related to thermostats
         internal override void ParseData(JToken deviceData)
@@ -53,83 +34,8 @@ namespace GoogleNest
             base.ParseData(deviceData);
 
             //check if connectivty trait exists to determine if we need to really parse data or not
-            if (deviceData["traits"]["sdm.devices.traits.Connectivity"] != null)
+            if (isOnline)
             {
-                if (deviceData["traits"]["sdm.devices.traits.Connectivity"].ToString().Contains("ONLINE"))
-                {
-                    if (onOnline != null)
-                    {
-                        onOnline(1);
-                    }
-                }
-                else
-                {
-                    if (onOnline != null)
-                    {
-                        onOnline(0);
-                    }
-                }
-                if (deviceData["traits"]["sdm.devices.traits.Settings"] != null)
-                {
-                    if (onTemperatureMode != null)
-                    {
-                        if (deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty) == "FAHRENHEIT")
-                        {
-                            isFahrenheit = true;
-                        }
-                        else
-                        {
-                            isFahrenheit = false;
-                        }
-
-                        onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
-                    }
-                }
-                if (deviceData["traits"]["sdm.devices.traits.Temperature"] != null)
-                {
-                    if (onCurrentTemperature != null)
-                    {
-                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
-
-                        if (isFahrenheit)
-                        {
-                            temp = CelsiusToFahrenHeit(temp);
-                        }
-
-                        onCurrentTemperature((ushort)(temp * 10), temp.ToString());
-                    }
-                }
-                if (deviceData["traits"]["sdm.devices.traits.Humidity"] != null)
-                {
-                    if (onHumidity != null)
-                    {
-                        onHumidity(Convert.ToUInt16(deviceData["traits"]["sdm.devices.traits.Humidity"]["ambientHumidityPercent"].ToString().Replace("\"", string.Empty)));
-                    }
-                }
-                if (deviceData["traits"]["sdm.devices.traits.Fan"] != null)
-                {
-                    if (onFanState != null)
-                    {
-                        if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerMode"].ToString().Replace("\"", string.Empty) == "ON")
-                        {
-                            onFanState(1);
-                        }
-                        else
-                        {
-                            fanTimer.Stop();
-                            onFanState(0);
-                        }
-                        if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"] != null)
-                        {
-                            var time = deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"].ToString().Replace("\"", string.Empty);
-
-                            var timeout = DateTime.Parse(time);
-                            var timerSetting = timeout - DateTime.Now;
-
-                            fanTimer.Reset(timerSetting.Milliseconds);
-                        }
-                    }
-                }
                 if (deviceData["traits"]["sdm.devices.traits.ThermostatMode"] != null)
                 {
                     if (onCurrentMode != null)
@@ -315,60 +221,7 @@ namespace GoogleNest
             catch (Exception e)
             {
             }
-        }
-
-        //Run fan for specified time
-        public void RunFan(ushort timeInSeconds)
-        {
-            try
-            {
-                if (timeInSeconds > 0)
-                {
-                    var response = PostCommand("{\"command\":\"sdm.devices.commands.Fan.SetTimer\",\"params\":{\"timerMode\":\"ON\",\"duration\":\"" + timeInSeconds + "s\"}}");
-
-                    if (response != null)
-                    {
-                        if (response.Length > 0)
-                        {
-                            if (response == "{}\n")
-                            {
-                                fanTimer.Reset(timeInSeconds * 1000);
-
-                                if (onFanState != null)
-                                    onFanState(1);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-            }
-        }
-
-        //turn the fan off
-        public void FanOff()
-        {
-            try
-            {
-                var response = PostCommand("{\"command\":\"sdm.devices.commands.Fan.SetTimer\",\"params\":{\"timerMode\":\"OFF\"}}");
-
-                if (response != null)
-                {
-                    if (response.Length > 0)
-                    {
-                        if (response == "{}\n")
-                        {
-                            if (onFanState != null)
-                                onFanState(0);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-            }
-        }
+        }  
 
         //Set HVAC mode to heat, cool or heat/cool
         public void SetHvacMode(string mode)
@@ -414,25 +267,6 @@ namespace GoogleNest
             catch (Exception e)
             {
             }
-        }
-
-        //Fan timer has completed fan is now off
-        private void FanTimerCompleted(object o)
-        {
-            if (onFanState != null)
-                onFanState(0);
-        }
-
-        //Convert celsius to fahrenheit
-        private decimal CelsiusToFahrenHeit(decimal temp)
-        {
-            return (temp * ((decimal)9.0 / (decimal)5.0)) + (decimal)32.0;
-        }
-
-        //Convert fahrenheit to celcius
-        private decimal FahrenheitToCelsius(decimal temp)
-        {
-            return (temp - (decimal)32.0) * ((decimal)5.0 / (decimal)9.0);
         }
     }
 }
