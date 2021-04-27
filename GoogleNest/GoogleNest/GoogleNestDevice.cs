@@ -215,6 +215,7 @@ namespace GoogleNest
                         client.HostVerification = false;
                         client.PeerVerification = false;
                         client.AllowAutoRedirect = false;
+                        client.IncludeHeaders = false;
 
                         HttpsClientRequest request = new HttpsClientRequest();
 
