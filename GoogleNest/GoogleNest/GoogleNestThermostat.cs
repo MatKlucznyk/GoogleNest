@@ -30,7 +30,7 @@ namespace GoogleNest
         //Parse data related to thermostats
         internal override void ParseData(JToken deviceData)
         {
-            //calls base class global device trai parsing
+            //calls base class global device trait parsing
             base.ParseData(deviceData);
 
             //check if connectivty trait exists to determine if we need to really parse data or not

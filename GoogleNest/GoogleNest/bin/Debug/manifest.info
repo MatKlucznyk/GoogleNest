@@ -1,9 +1,13 @@
-﻿MainAssembly=GoogleNest.dll:edb77ed7267d22bf3eeb2e6ee78cfb42
+﻿MainAssembly=GoogleNest.dll:f76c3013a15af9730afde470dabcc15d
 MainAssemblyMinFirmwareVersion=1.007.0017
 MainAssemblyResource=SimplSharpData.dat:820b61c48c8a2cace82957eed4cc377c
 MainAssemblyResource=SimplSharpData.dat.der:bf862965c00f3e6ec535e4e00e82d30c
 MainAssemblyResource=SimplSharpData.dat:820b61c48c8a2cace82957eed4cc377c
 MainAssemblyResource=SimplSharpData.dat.der:bf862965c00f3e6ec535e4e00e82d30c
+ü
+DependencySource=HttpsUtility.dll:6313d198bff3a513ac3fc3351d25713d
+DependencyPath=GoogleNest.clz:HttpsUtility.dll
+DependencyMainAssembly=HttpsUtility.dll:6313d198bff3a513ac3fc3351d25713d
 ü
 DependencySource=Newtonsoft.Json.Compact.dll:66d4c8a51da9d0c73cefdb9711863f70
 DependencyPath=GoogleNest.clz:Newtonsoft.Json.Compact.dll

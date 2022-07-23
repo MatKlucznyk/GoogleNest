@@ -30,7 +30,7 @@ namespace GoogleNest
 
         private string deviceName;
         private CTimer fanTimer;
-        private HttpsClient client = new HttpsClient() { TimeoutEnabled = true, Timeout = 5, HostVerification = false, PeerVerification = false, AllowAutoRedirect = false, IncludeHeaders = false };
+        //private HttpsClient client = new HttpsClient() { TimeoutEnabled = true, Timeout = 5, HostVerification = false, PeerVerification = false, AllowAutoRedirect = false, IncludeHeaders = false };
 
         internal string DeviceID;
         internal bool isOnline;
@@ -166,23 +166,19 @@ namespace GoogleNest
             {
                 if (DeviceID.Length > 0)
                 {
-                    HttpsClientRequest request = new HttpsClientRequest();
+                    HttpsHeaders headers = new HttpsHeaders();
+                    headers.ContentType = "application/json";
+                    headers.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", GoogleNestCloud.TokenType, GoogleNestCloud.Token)));
 
-                    request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID + ":executeCommand");
-                    request.RequestType = RequestType.Post;
-                    request.Header.ContentType = "application/json";
-                    request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", GoogleNestCloud.TokenType, GoogleNestCloud.Token)));
+                    var response = HttpsConnection.ClientPool.SendRequest("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID + ":executeCommand", RequestType.Post, headers, body);
 
-                    request.ContentString = body;
-
-                    HttpsClientResponse response = client.Dispatch(request);
-
-                    return response.ContentString;
+                    if(response != null)
+                    {
+                        return response.Content;
+                    }
                 }
-                else
-                {
-                    return string.Empty;
-                }
+
+                return string.Empty;
             }
             catch (Exception e)
             {
@@ -198,20 +194,17 @@ namespace GoogleNest
             {
                 if (DeviceID.Length > 0)
                 {
-                    HttpsClientRequest request = new HttpsClientRequest();
+                    HttpsHeaders headers = new HttpsHeaders();
+                    headers.ContentType = "application/json";
+                    headers.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", GoogleNestCloud.TokenType, GoogleNestCloud.Token)));
 
-                    request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID);
-                    request.RequestType = RequestType.Get;
-                    request.Header.ContentType = "application/json";
-                    request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", GoogleNestCloud.TokenType, GoogleNestCloud.Token)));
+                    var response = HttpsConnection.ClientPool.SendRequest("https://smartdevicemanagement.googleapis.com/v1/" + DeviceID, RequestType.Get, headers, string.Empty);
 
-                    HttpsClientResponse response = client.Dispatch(request);
-
-                    if (response.ContentString != null)
+                    if (response.Content != null)
                     {
-                        if (response.ContentString.Length > 0)
+                        if (response.Content.Length > 0)
                         {
-                            JToken body = JToken.Parse(response.ContentString);
+                            JToken body = JToken.Parse(response.Content);
                             ParseData(body);
                         }
                     }

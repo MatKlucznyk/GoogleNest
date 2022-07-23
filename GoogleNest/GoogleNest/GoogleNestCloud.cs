@@ -27,7 +27,7 @@ namespace GoogleNest
 
         private readonly CCriticalSection _disposeLock = new CCriticalSection();
         private CTimer refreshTimer;
-        private readonly HttpsClient client = new HttpsClient() { TimeoutEnabled = true, Timeout = 5, HostVerification = false, PeerVerification = false, AllowAutoRedirect = false, IncludeHeaders = false };
+        //private readonly HttpsClient client = new HttpsClient() { TimeoutEnabled = true, Timeout = 5, HostVerification = false, PeerVerification = false, AllowAutoRedirect = false, IncludeHeaders = false };
         private bool _disposed;
 
         internal static bool Initialized;
@@ -120,18 +120,14 @@ namespace GoogleNest
         {
             try
             {
-                HttpsClientRequest request = new HttpsClientRequest();
 
-                request.Url.Parse("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&refresh_token=" + refreshToken + "&grant_type=refresh_token&redirect_uri=https://www.google.com&client_secret=" + ClientSecret);
-                request.RequestType = RequestType.Post;
+                var response = HttpsConnection.ClientPool.SendRequest("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&refresh_token=" + refreshToken + "&grant_type=refresh_token&redirect_uri=https://www.google.com&client_secret=" + ClientSecret, RequestType.Post, null, string.Empty);
 
-                HttpsClientResponse response = client.Dispatch(request);
-
-                if (response.ContentString != null)
+                if (response.Content != null)
                 {
-                    if (response.ContentString.Length > 0)
+                    if (response.Content.Length > 0)
                     {
-                        JObject body = JObject.Parse(response.ContentString);
+                        JObject body = JObject.Parse(response.Content);
 
                         if (body["expires_in"] != null)
                         {
@@ -162,18 +158,14 @@ namespace GoogleNest
         {
             try
             {
-                HttpsClientRequest request = new HttpsClientRequest();
 
-                request.Url.Parse("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&code=" + AuthCode + "&grant_type=authorization_code&redirect_uri=https://www.google.com&client_secret=" + ClientSecret);
-                request.RequestType = RequestType.Post;
+                var response = HttpsConnection.ClientPool.SendRequest("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&code=" + AuthCode + "&grant_type=authorization_code&redirect_uri=https://www.google.com&client_secret=" + ClientSecret, RequestType.Post, null, string.Empty);
 
-                HttpsClientResponse response = client.Dispatch(request);
-
-                if (response.ContentString != null)
+                if (response.Content != null)
                 {
-                    if (response.ContentString.Length > 0)
+                    if (response.Content.Length > 0)
                     {
-                        JObject body = JObject.Parse(response.ContentString);
+                        JObject body = JObject.Parse(response.Content);
 
                         if (body["expires_in"] != null)
                         {
@@ -214,20 +206,18 @@ namespace GoogleNest
         {
             try
             {
-                HttpsClientRequest request = new HttpsClientRequest();
+                HttpsHeaders headers = new HttpsHeaders();
+                headers.ContentType = "application/json";
+                headers.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", TokenType, Token)));
 
-                request.Url.Parse("https://smartdevicemanagement.googleapis.com/v1/enterprises/" + ProjectID + "/devices");
-                request.RequestType = RequestType.Get;
-                request.Header.ContentType = "application/json";
-                request.Header.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", TokenType, Token)));
 
-                HttpsClientResponse response = client.Dispatch(request);
+                var response = HttpsConnection.ClientPool.SendRequest("https://smartdevicemanagement.googleapis.com/v1/enterprises/" + ProjectID + "/devices", RequestType.Get, headers, string.Empty);
 
-                if (response.ContentString != null)
+                if (response.Content != null)
                 {
-                    if (response.ContentString.Length > 0)
+                    if (response.Content.Length > 0)
                     {
-                        JObject body = JObject.Parse(response.ContentString);
+                        JObject body = JObject.Parse(response.Content);
 
                         if (body["error"] != null && onErrorMessage != null)
                         {
@@ -270,8 +260,6 @@ namespace GoogleNest
                 {
                     device.Value.Dispose();
                 }
-
-                client.Dispose();
             }
         }
     }
