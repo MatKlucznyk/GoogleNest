@@ -29,6 +29,7 @@ namespace GoogleNest
         private CTimer refreshTimer;
         //private readonly HttpsClient client = new HttpsClient() { TimeoutEnabled = true, Timeout = 5, HostVerification = false, PeerVerification = false, AllowAutoRedirect = false, IncludeHeaders = false };
         private bool _disposed;
+        private int _refreshTries;
 
         internal static bool Initialized;
         internal static string Token;
@@ -122,6 +123,7 @@ namespace GoogleNest
             {
 
                 var response = HttpsConnection.ClientPool.SendRequest("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&refresh_token=" + refreshToken + "&grant_type=refresh_token&redirect_uri=https://www.google.com&client_secret=" + ClientSecret, RequestType.Post, null, string.Empty);
+                var found = false;
 
                 if (response.Content != null)
                 {
@@ -131,10 +133,13 @@ namespace GoogleNest
 
                         if (body["expires_in"] != null)
                         {
-                            var seconds = Convert.ToInt16(body["expires_in"].ToString().Replace("\"", string.Empty)) - 10;
+                            var seconds = Convert.ToInt16(body["expires_in"].ToString().Replace("\"", string.Empty)) - 2628000;
                             var milliseconds = seconds * 1000;
 
+                            found = true;
+                            _refreshTries = 0;
                             refreshTimer.Reset(milliseconds);
+
                         }
                         if (body["access_token"] != null)
                         {
@@ -144,6 +149,18 @@ namespace GoogleNest
                         {
                             TokenType = body["token_type"].ToString().Replace("\"", string.Empty);
                         }
+                    }
+                }
+                if(found == false && _refreshTries < 120 && refreshToken.Length > 0)
+                {
+                    _refreshTries++;
+                    refreshTimer.Reset(3600000);
+                }
+                else if(found == false && _refreshTries >= 120)
+                {
+                    if (onErrorMessage != null)
+                    {
+                        onErrorMessage("Refresh token failed to refresh 120 times (every hour for the past 5 days). Please gerenate a new authorization code.");
                     }
                 }
             }
