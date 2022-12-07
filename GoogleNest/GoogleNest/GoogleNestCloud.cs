@@ -186,7 +186,7 @@ namespace GoogleNest
 
                         if (body["expires_in"] != null)
                         {
-                            var seconds = Convert.ToInt16(body["expires_in"].ToString().Replace("\"", string.Empty)) - 10;
+                            var seconds = Convert.ToInt16(body["expires_in"].ToString().Replace("\"", string.Empty)) - 1000;
                             var milliseconds = seconds * 1000;
 
                             refreshTimer.Reset(milliseconds);
