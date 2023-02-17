@@ -2,7 +2,7 @@
 
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
-digital_input Initialize;
+digital_input Initialize, Debug;
 string_input AuthCode[65534];
 
 digital_output IsInitialized;
@@ -30,6 +30,16 @@ push Initialize
         	Error = "Project ID, Client ID and Client Secret must be filled out in the SIMPL program";
         }
     }
+}
+
+push Debug
+{
+    cloud.Debug = 1;
+}
+
+release Debug
+{
+    cloud.Debug = 0;
 }
 
 callback function NewErrorMessage(string msg)

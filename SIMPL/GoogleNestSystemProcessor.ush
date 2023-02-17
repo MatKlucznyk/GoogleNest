@@ -6,7 +6,7 @@
   Sgntr=UserSPlus
   RelVrs=1
   IntStrVrs=1
-  SPlusVrs=4.05.01
+  SPlusVrs=4.06.00
   CrossCplrVrs=1.3
 [END]
 [BEGIN]
@@ -24,6 +24,8 @@
   SMWRev=3.00.00
   InputCue1=Initialize
   InputSigType1=Digital
+  InputCue2=Debug
+  InputSigType2=Digital
   OutputCue1=IsInitialized
   OutputSigType1=Digital
   InputList2Cue1=AuthCode
@@ -43,8 +45,8 @@
   ParamSigType6=String
   ParamCue7=ProjectID
   ParamSigType7=String
-  MinVariableInputs=1
-  MaxVariableInputs=1
+  MinVariableInputs=2
+  MaxVariableInputs=2
   MinVariableInputsList2=1
   MaxVariableInputsList2=1
   MinVariableOutputs=1

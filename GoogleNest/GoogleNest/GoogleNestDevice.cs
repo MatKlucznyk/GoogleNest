@@ -27,6 +27,11 @@ namespace GoogleNest
         public CurrentTemperature onCurrentTemperature { get; set; }
 
         public string DeviceName { get { return deviceName; } }
+        public ushort Debug 
+        { 
+            get { return Convert.ToUInt16(_debug); }
+            set { _debug = Convert.ToBoolean(value); }
+        }
 
         private string deviceName;
         private CTimer fanTimer;
@@ -35,6 +40,7 @@ namespace GoogleNest
         internal string DeviceID;
         internal bool isOnline;
         internal bool isFahrenheit;
+        internal bool _debug;
 
         public GoogleNestDevice()
         {
@@ -159,6 +165,14 @@ namespace GoogleNest
             }
         }
 
+        internal void PrintDebug(string msg)
+        {
+            if (_debug)
+            {
+                CrestronConsole.PrintLine("GoogleNestDevice --DEBUG: {0}", msg);
+            }
+        }
+
         //Post HTTPS command
         internal string PostCommand(string body)
         {
@@ -174,6 +188,7 @@ namespace GoogleNest
 
                     if(response != null)
                     {
+                        PrintDebug(string.Format("Response Found -> {0}", response.Content));
                         return response.Content;
                     }
                 }
@@ -204,6 +219,7 @@ namespace GoogleNest
                     {
                         if (response.Content.Length > 0)
                         {
+                            PrintDebug(string.Format("Response Found -> {0}", response.Content));
                             JToken body = JToken.Parse(response.Content);
                             ParseData(body);
                         }

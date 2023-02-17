@@ -2,7 +2,7 @@
 
 #USER_SIMPLSHARP_LIBRARY "GoogleNest"
 
-digital_input GetDevice, _skip_, Heat, Cool, HeatCool, HvacOff, RunFan15_Mins, RunFan30_Mins, RunFan45_Mins, RunFan1_Hour, RunFan2_Hours, RunFan4_Hours, RunFan8_Hours, RunFan12_Hours, FanOff, _skip_, EcoManualEco, EcoOff;
+digital_input Debug, GetDevice, _skip_, Heat, Cool, HeatCool, HvacOff, RunFan15_Mins, RunFan30_Mins, RunFan45_Mins, RunFan1_Hour, RunFan2_Hours, RunFan4_Hours, RunFan8_Hours, RunFan12_Hours, FanOff, _skip_, EcoManualEco, EcoOff;
 analog_input _skip_, _skip_, CoolSetpoint, HeatSetpoint;
 
 digital_output IsOnline, _skip_, HvacIsHeat, HvacIsCool, HvacIsHeatCool, HvacIsOff, HvacIsHeating, HvacIsCooling, HvacIsIdle, IsCelsius, IsFahrenheit, _skip_, _skip_, FanIsOn, _skip_, _skip_, EcoIsManualEco, EcoIsOff;
@@ -12,6 +12,16 @@ string_output CurrentTemperatureString, RoomName, ErrorMessage;
 string_parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
 
 GoogleNestThermostat thermostat;
+
+push Debug
+{
+    thermostat.Debug = 1;
+}
+
+release Debug
+{
+    thermostat.Debug = 0;
+}
 
 push GetDevice
 {

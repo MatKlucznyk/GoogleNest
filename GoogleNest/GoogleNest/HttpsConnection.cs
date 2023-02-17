@@ -10,6 +10,5 @@ namespace GoogleNest
     internal class HttpsConnection
     {
         internal static HttpsClientPool ClientPool = new HttpsClientPool();
-
     }
 }

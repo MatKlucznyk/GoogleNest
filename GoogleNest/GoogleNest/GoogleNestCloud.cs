@@ -15,6 +15,11 @@ namespace GoogleNest
         public static string ClientID { get; set; }
         public static string ClientSecret { get; set; }
         public static string ProjectID { get; set; }
+        public ushort Debug
+        {
+            get { return Convert.ToUInt16(_debug); }
+            set { _debug = Convert.ToBoolean(value); }
+        }
 
         public delegate void ErrorMsg(SimplSharpString errorMessage);
         public delegate void IsInitialized(ushort state);
@@ -30,6 +35,7 @@ namespace GoogleNest
         //private readonly HttpsClient client = new HttpsClient() { TimeoutEnabled = true, Timeout = 5, HostVerification = false, PeerVerification = false, AllowAutoRedirect = false, IncludeHeaders = false };
         private bool _disposed;
         private int _refreshTries;
+        private bool _debug;
 
         internal static bool Initialized;
         internal static string Token;
@@ -39,6 +45,14 @@ namespace GoogleNest
         public GoogleNestCloud()
         {
             refreshTimer = new CTimer(UseRefreshToken, Timeout.Infinite);
+        }
+
+        internal void PrintDebug(string msg)
+        {
+            if (_debug)
+            {
+                CrestronConsole.PrintLine("GoogleNestCloud --DEBUG: {0}", msg);
+            }
         }
 
         //Check if refresh token file exists and consume if it does
@@ -129,11 +143,12 @@ namespace GoogleNest
                 {
                     if (response.Content.Length > 0)
                     {
+                        PrintDebug(string.Format("Response Found -> {0}", response.Content));
                         JObject body = JObject.Parse(response.Content);
 
                         if (body["expires_in"] != null)
                         {
-                            var seconds = Convert.ToInt16(body["expires_in"].ToString().Replace("\"", string.Empty)) - 2628000;
+                            var seconds = 86400;
                             var milliseconds = seconds * 1000;
 
                             found = true;
@@ -154,13 +169,13 @@ namespace GoogleNest
                 if(found == false && _refreshTries < 120 && refreshToken.Length > 0)
                 {
                     _refreshTries++;
-                    refreshTimer.Reset(3600000);
+                    refreshTimer.Reset(1800000);
                 }
                 else if(found == false && _refreshTries >= 120)
                 {
                     if (onErrorMessage != null)
                     {
-                        onErrorMessage("Refresh token failed to refresh 120 times (every hour for the past 5 days). Please gerenate a new authorization code.");
+                        onErrorMessage("Refresh token failed to refresh 120 times (every 30 minutes for the past 2.5 days). Please gerenate a new authorization code.");
                     }
                 }
             }
@@ -175,18 +190,18 @@ namespace GoogleNest
         {
             try
             {
-
                 var response = HttpsConnection.ClientPool.SendRequest("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&code=" + AuthCode + "&grant_type=authorization_code&redirect_uri=https://www.google.com&client_secret=" + ClientSecret, RequestType.Post, null, string.Empty);
 
                 if (response.Content != null)
                 {
                     if (response.Content.Length > 0)
                     {
+                        PrintDebug(string.Format("Response Found -> {0}", response.Content));
                         JObject body = JObject.Parse(response.Content);
 
                         if (body["expires_in"] != null)
                         {
-                            var seconds = Convert.ToInt16(body["expires_in"].ToString().Replace("\"", string.Empty)) - 1000;
+                            var seconds = 86400;
                             var milliseconds = seconds * 1000;
 
                             refreshTimer.Reset(milliseconds);
@@ -223,7 +238,7 @@ namespace GoogleNest
         {
             try
             {
-                HttpsHeaders headers = new HttpsHeaders();
+                var headers = new HttpsHeaders();
                 headers.ContentType = "application/json";
                 headers.AddHeader(new HttpsHeader("Authorization", string.Format("{0} {1}", TokenType, Token)));
 
@@ -234,6 +249,7 @@ namespace GoogleNest
                 {
                     if (response.Content.Length > 0)
                     {
+                        PrintDebug(string.Format("Response Found -> {0}", response.Content));
                         JObject body = JObject.Parse(response.Content);
 
                         if (body["error"] != null && onErrorMessage != null)
