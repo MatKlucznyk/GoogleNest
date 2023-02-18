@@ -135,7 +135,7 @@ namespace GoogleNest
         {
             try
             {
-
+                PrintDebug("Using refresh token...");
                 var response = HttpsConnection.ClientPool.SendRequest("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&refresh_token=" + refreshToken + "&grant_type=refresh_token&redirect_uri=https://www.google.com&client_secret=" + ClientSecret, RequestType.Post, null, string.Empty);
                 var found = false;
 
@@ -148,7 +148,7 @@ namespace GoogleNest
 
                         if (body["expires_in"] != null)
                         {
-                            var seconds = 86400;
+                            var seconds = 1000;
                             var milliseconds = seconds * 1000;
 
                             found = true;
@@ -190,6 +190,7 @@ namespace GoogleNest
         {
             try
             {
+                PrintDebug("Getting token and refresh token...");
                 var response = HttpsConnection.ClientPool.SendRequest("https://www.googleapis.com/oauth2/v4/token?client_id=" + ClientID + "&code=" + AuthCode + "&grant_type=authorization_code&redirect_uri=https://www.google.com&client_secret=" + ClientSecret, RequestType.Post, null, string.Empty);
 
                 if (response.Content != null)
@@ -201,7 +202,7 @@ namespace GoogleNest
 
                         if (body["expires_in"] != null)
                         {
-                            var seconds = 86400;
+                            var seconds = 1000;
                             var milliseconds = seconds * 1000;
 
                             refreshTimer.Reset(milliseconds);
