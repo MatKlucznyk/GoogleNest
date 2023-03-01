@@ -17,3 +17,14 @@ D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Project
 D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\GoogleNest\GoogleNest\GoogleNest\obj\Debug\ResolveAssemblyReference.cache
 D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\GoogleNest\GoogleNest\GoogleNest\obj\Debug\GoogleNest.dll
 D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\GoogleNest\GoogleNest\GoogleNest\obj\Debug\GoogleNest.pdb
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\obj\Debug\GoogleNest.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\obj\Debug\GoogleNest.pdb
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\GoogleNest.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\GoogleNest.pdb
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\SimplSharpCustomAttributesInterface.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\SimplSharpHelperInterface.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\SimplSharpNewtonsoft.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\SimplSharpReflectionInterface.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\SimplSharpSQLHelperInterface.dll
+C:\Users\pietro\Documents\PROGETTI\GoogleNest\GoogleNest\GoogleNest\bin\Debug\Newtonsoft.Json.Compact.dll
