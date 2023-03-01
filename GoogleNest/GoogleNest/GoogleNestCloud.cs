@@ -40,7 +40,8 @@ namespace GoogleNest
         internal static bool Initialized;
         internal static string Token;
         internal static string TokenType;
-        internal readonly static Dictionary<string, GoogleNestDevice> devices = new Dictionary<string, GoogleNestDevice>();
+        private readonly static Dictionary<string, GoogleNestDevice> devices = new Dictionary<string, GoogleNestDevice>();
+        private static readonly object _devicesLock = new object();
 
         public GoogleNestCloud()
         {
@@ -52,6 +53,19 @@ namespace GoogleNest
             if (_debug)
             {
                 CrestronConsole.PrintLine("GoogleNestCloud --DEBUG: {0}", msg);
+            }
+        }
+
+        internal static bool AddDevice(string name, GoogleNestDevice device)
+        {
+            lock (_devicesLock)
+            {
+                if (devices.ContainsKey(name))
+                    return false;
+
+                devices.Add(name, device);
+
+                return true;
             }
         }
 
@@ -76,6 +90,7 @@ namespace GoogleNest
                     {
                         if (onErrorMessage != null)
                         {
+                            
                             onErrorMessage("Stored refresh token file is empty, please delete file and use authorization code");
                         }
                     }
@@ -144,7 +159,7 @@ namespace GoogleNest
                     if (response.Content.Length > 0)
                     {
                         PrintDebug(string.Format("Response Found -> {0}", response.Content));
-                        JObject body = JObject.Parse(response.Content);
+                        var body = JObject.Parse(response.Content);
 
                         if (body["expires_in"] != null)
                         {
@@ -251,7 +266,7 @@ namespace GoogleNest
                     if (response.Content.Length > 0)
                     {
                         PrintDebug(string.Format("Response Found -> {0}", response.Content));
-                        JObject body = JObject.Parse(response.Content);
+                        var body = JObject.Parse(response.Content);
 
                         if (body["error"] != null && onErrorMessage != null)
                         {
@@ -260,6 +275,7 @@ namespace GoogleNest
 
                         foreach (var dev in body["devices"])
                         {
+                            PrintDebug(string.Format("Device found {0}:\n{1}", dev["traits"]["sdm.devices.traits.Info"]["customName"].ToObject<string>(), dev));
                             if (devices.ContainsKey(dev["traits"]["sdm.devices.traits.Info"]["customName"].ToString().Replace("\"", string.Empty)))
                             {
                                 devices[dev["traits"]["sdm.devices.traits.Info"]["customName"].ToString().Replace("\"", string.Empty)].ParseData(dev);

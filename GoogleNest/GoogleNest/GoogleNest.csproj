@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="GoogleNestCloud.cs" />
     <Compile Include="GoogleNestDevice.cs" />
+    <Compile Include="GoogleNestDoorbell.cs" />
     <Compile Include="GoogleNestThermostat.cs" />
     <Compile Include="HttpsConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

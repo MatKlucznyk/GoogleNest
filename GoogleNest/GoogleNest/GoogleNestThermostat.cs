@@ -12,7 +12,6 @@ namespace GoogleNest
     public class GoogleNestThermostat : GoogleNestDevice
     {     
         public delegate void EcoModeState(SimplSharpString mode);
-        
         public delegate void CurrentMode(SimplSharpString mode);
         public delegate void EcoHeatSetPoint(ushort value);
         public delegate void EcoCoolSetPoint(ushort value);
@@ -152,7 +151,7 @@ namespace GoogleNest
             try
             {
                 //convert s+ ushort to a double moving the percision by 10
-                decimal sPoint = Math.Round((decimal)setPoint / (decimal)10.0, 1);
+                var sPoint = Math.Round((decimal)setPoint / (decimal)10.0, 1);
 
                 if (isFahrenheit)
                 {

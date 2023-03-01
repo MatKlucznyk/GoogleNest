@@ -1,0 +1,90 @@
+/* #region Header */
+#SYMBOL_NAME "Google Nest Doorbell"
+
+//Author: Mat Klucznyk
+//Company: Global USS
+//Email: mathew.klucznyk@globaluss.com
+
+#USER_SIMPLSHARP_LIBRARY "GoogleNest"
+
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+
+#DEFINE_CONSTANT true 1
+#DEFINE_CONSTANT false 0
+/* #endregion */
+
+/* #region IO Constructor */
+//inputs
+digital_input Debug, GetDevice;
+
+//outputs
+analog_output LiveStreamMaxVideoResolutionWidth, LiveStreamMaxVideoResolutionHeight;
+string_output RoomName, ErrorMessage;
+//parameters
+string_parameter _skip_, _skip_, _skip_, _skip_, DeviceName[65534];
+/*
+#BEGIN_PARAMETER_PROPERTIES parameter_variable, parameter_variable, ...
+   // propValidUnits = // unitString or unitDecimal|unitHex|unitPercent|unitCharacter|unitTime|unitTicks;
+   // propDefaultUnit = // unitString, unitDecimal, unitHex, unitPercent, unitCharacter, unitTime or unitTicks;
+   // propBounds = lower_bound , upper_bound;
+   // propDefaultValue = ;  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+*/
+
+//objects
+GoogleNestDoorbell _doorbell;
+/* #endregion */
+
+/* #region Functions */
+
+/* #endregion */
+
+/* #region Events */
+push Debug
+{
+	_doorbell.Debug = 1;
+}
+
+release Debug
+{
+	_doorbell.Debug = 0;
+}
+
+push GetDevice
+{
+	_doorbell.GetDevice();
+}
+/* #endregion */
+
+/* #region Callbacks */
+callback function NewLiveStreamMaxVideoResolution(integer width, integer height)
+{
+	LiveStreamMaxVideoResolutionWidth = width;
+	LiveStreamMaxVideoResolutionHeight = height;
+}
+
+callback function newRoomName(string name)
+{
+	RoomName = name;
+}
+
+callback function newErrorMsg(string msg)
+{
+	ErrorMessage = msg;
+}
+/* #endregion */
+
+Function Main()
+{
+	RegisterDelegate(_doorbell, onLiveStreamMaxVideoResolution, NewLiveStreamMaxVideoResolution);
+	RegisterDelegate(_doorbell, onRoomName, newRoomName);
+	RegisterDelegate(_doorbell, onErrorMsg, newErrorMsg);
+	
+	_doorbell.Initialize(DeviceName);
+}

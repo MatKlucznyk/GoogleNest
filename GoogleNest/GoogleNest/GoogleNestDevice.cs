@@ -41,6 +41,7 @@ namespace GoogleNest
         internal bool isOnline;
         internal bool isFahrenheit;
         internal bool _debug;
+        private bool _registered;
 
         public GoogleNestDevice()
         {
@@ -52,13 +53,10 @@ namespace GoogleNest
         public void Initialize(string deviceName)
         {
             this.deviceName = deviceName;
-            
-            lock (GoogleNestCloud.devices)
-            {
-                GoogleNestCloud.devices.Add(deviceName, this);
-            }
 
-            if (GoogleNestCloud.Initialized)
+            _registered = GoogleNestCloud.AddDevice(deviceName, this);
+
+            if (GoogleNestCloud.Initialized && _registered)
             {
                 GetDevice();
             }
