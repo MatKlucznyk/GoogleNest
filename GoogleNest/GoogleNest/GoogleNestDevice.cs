@@ -61,113 +61,122 @@ namespace GoogleNest
                 GetDevice();
             }
         }
-        
-    
-        //Parse device data
-        internal virtual void ParseData(JToken deviceData)
-        {
-            if (deviceData["traits"]["sdm.devices.traits.Connectivity"] != null)
-            {
-                if (deviceData["traits"]["sdm.devices.traits.Connectivity"].ToString().Contains("ONLINE"))
-                {
-                    if (onOnline != null)
-                    {
-                        isOnline = true;
-                        onOnline(1);
-                    }
-                }
-                else
-                {
-                    if (onOnline != null)
-                    {
-                        isOnline = false;
-                        onOnline(0);
-                    }
-                }
-            }
-            if (deviceData["name"] != null)
-            {
-                DeviceID = deviceData["name"].ToString().Replace("\"", string.Empty);
-            }
-            if (deviceData["parentRelations"] != null)
-            {
-                if (onRoomName != null)
-                {
-                    onRoomName(deviceData["parentRelations"][0]["displayName"].ToString().Replace("\"", string.Empty));
-                }
-            }
-            if (deviceData["error"] != null)
-            {
-                onErrorMsg(deviceData["error"]["message"].ToString().Replace("\"", string.Empty));
-            }
-            if (deviceData["traits"]["sdm.devices.traits.Fan"] != null)
-            {
-                if (onFanState != null)
-                {
-                    if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerMode"].ToString().Replace("\"", string.Empty) == "ON")
-                    {
-                        onFanState(1);
-                    }
-                    else
-                    {
-                        fanTimer.Stop();
-                        onFanState(0);
-                    }
-                    if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"] != null)
-                    {
-                        var time = deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"].ToString().Replace("\"", string.Empty);
-
-                        var timeout = DateTime.Parse(time);
-                        var timerSetting = timeout - DateTime.Now;
-
-                        fanTimer.Reset(timerSetting.Milliseconds);
-                    }
-                }
-            }
-            if (deviceData["traits"]["sdm.devices.traits.Settings"] != null)
-            {
-                if (onTemperatureMode != null)
-                {
-                    if (deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty) == "FAHRENHEIT")
-                    {
-                        isFahrenheit = true;
-                    }
-                    else
-                    {
-                        isFahrenheit = false;
-                    }
-
-                    onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
-                }
-            }
-            if (deviceData["traits"]["sdm.devices.traits.Temperature"] != null)
-            {
-                if (onCurrentTemperature != null)
-                {
-                    decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
-
-                    if (isFahrenheit)
-                    {
-                        temp = CelsiusToFahrenHeit(temp);
-                    }
-
-                    onCurrentTemperature((ushort)(temp * 10), temp.ToString());
-                }
-            }
-            if (deviceData["traits"]["sdm.devices.traits.Humidity"] != null)
-            {
-                if (onHumidity != null)
-                {
-                    onHumidity(Convert.ToUInt16(deviceData["traits"]["sdm.devices.traits.Humidity"]["ambientHumidityPercent"].ToString().Replace("\"", string.Empty)));
-                }
-            }
-        }
 
         internal void PrintDebug(string msg)
         {
             if (_debug)
             {
                 CrestronConsole.PrintLine("GoogleNestDevice --DEBUG: {0}", msg);
+            }
+        }
+    
+        //Parse device data
+        internal virtual void ParseData(JToken deviceData)
+        {
+            try {
+                if (deviceData["traits"]["sdm.devices.traits.Connectivity"] != null)
+                {
+                    if (deviceData["traits"]["sdm.devices.traits.Connectivity"].ToString().Contains("ONLINE"))
+                    {
+                        if (onOnline != null)
+                        {
+                            isOnline = true;
+                            onOnline(1);
+                        }
+                    }
+                    else
+                    {
+                        if (onOnline != null)
+                        {
+                            isOnline = false;
+                            onOnline(0);
+                        }
+                    }
+                }
+                if (deviceData["name"] != null)
+                {
+                    DeviceID = deviceData["name"].ToString().Replace("\"", string.Empty);
+                }
+                if (deviceData["parentRelations"] != null)
+                {
+                    if (onRoomName != null)
+                    {
+                        onRoomName(deviceData["parentRelations"][0]["displayName"].ToString().Replace("\"", string.Empty));
+                    }
+                }
+                if (deviceData["error"] != null)
+                {
+                    onErrorMsg(deviceData["error"]["message"].ToString().Replace("\"", string.Empty));
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Fan"] != null)
+                {
+                    if (onFanState != null)
+                    {
+                        if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerMode"] != null)
+                        {
+                            if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerMode"].ToString().Replace("\"", string.Empty) == "ON")
+                            {
+                                onFanState(1);
+                            }
+                            else
+                            {
+                                fanTimer.Stop();
+                                onFanState(0);
+                            }
+                        }
+
+                        if (deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"] != null)
+                        {
+                            var time = deviceData["traits"]["sdm.devices.traits.Fan"]["timerTimeout"].ToString().Replace("\"", string.Empty);
+
+                            var timeout = DateTime.Parse(time);
+                            var timerSetting = timeout - DateTime.Now;
+
+                            fanTimer.Reset(timerSetting.Milliseconds);
+                        }
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Settings"] != null)
+                {
+                    if (onTemperatureMode != null)
+                    {
+                        if (deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty) == "FAHRENHEIT")
+                        {
+                            isFahrenheit = true;
+                        }
+                        else
+                        {
+                            isFahrenheit = false;
+                        }
+
+                        onTemperatureMode(deviceData["traits"]["sdm.devices.traits.Settings"]["temperatureScale"].ToString().Replace("\"", string.Empty));
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Temperature"] != null)
+                {
+
+                    if (onCurrentTemperature != null)
+                    {
+                        decimal temp = Math.Round(Convert.ToDecimal(deviceData["traits"]["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].ToString().Replace("\"", string.Empty)), 1);
+
+                        if (isFahrenheit)
+                        {
+                            temp = CelsiusToFahrenHeit(temp);
+                        }
+                        onCurrentTemperature((ushort)(temp * 10), temp.ToString());
+                    }
+                }
+                if (deviceData["traits"]["sdm.devices.traits.Humidity"] != null)
+                {
+                    if (onHumidity != null)
+                    {
+                        onHumidity(Convert.ToUInt16(deviceData["traits"]["sdm.devices.traits.Humidity"]["ambientHumidityPercent"].ToString().Replace("\"", string.Empty)));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorLog.Exception("Exception ocurred in ParseData", e);
             }
         }
 
